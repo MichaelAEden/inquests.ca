@@ -2,7 +2,7 @@ import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import org.scalatest.{Matchers, WordSpec}
 
-class InquestRouterListSpec extends WordSpec with Matchers with ScalatestRouteTest {
+class InquestRouterListSpec extends WordSpec with Matchers with ScalatestRouteTest with InquestMocks {
 
   import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
   import io.circe.generic.auto._
@@ -22,6 +22,15 @@ class InquestRouterListSpec extends WordSpec with Matchers with ScalatestRouteTe
         status shouldBe StatusCodes.OK
         val response = responseAs[Seq[Inquest]]
         response shouldBe inquests
+      }
+    }
+
+    "handle repository failure in inquests route" in {
+      val repository = new FailingRepository
+      val router = new InquestRouter(repository)
+
+      Get("/inquests") ~> router.route ~> check {
+        status shouldBe StatusCodes.InternalServerError
       }
     }
 

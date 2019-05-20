@@ -1,4 +1,8 @@
+import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.{Directives, Route}
+
+import scala.util.control.NonFatal
+import scala.util.{Failure, Success}
 
 trait Router {
 
@@ -14,7 +18,12 @@ class InquestRouter(inquestRepository: InquestRepository) extends Router with Di
   override def route: Route = pathPrefix("inquests") {
     pathEndOrSingleSlash {
       get {
-        complete(inquestRepository.all())
+        onComplete(inquestRepository.all()) {
+          case Success(inquests) => complete(inquests)
+          case Failure(NonFatal(error)) =>
+            println(error.getMessage) // TODO: logging
+            complete(StatusCodes.InternalServerError)
+        }
       }
     }
   }
