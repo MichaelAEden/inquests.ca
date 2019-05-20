@@ -31,6 +31,8 @@ class InquestRouterListSpec extends WordSpec with Matchers with ScalatestRouteTe
 
       Get("/inquests") ~> router.route ~> check {
         status shouldBe StatusCodes.InternalServerError
+        val response = responseAs[String]
+        response shouldBe ApiError.generic.message
       }
     }
 

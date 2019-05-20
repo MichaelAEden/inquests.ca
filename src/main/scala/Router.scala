@@ -22,7 +22,7 @@ class InquestRouter(inquestRepository: InquestRepository) extends Router with Di
           case Success(inquests) => complete(inquests)
           case Failure(NonFatal(error)) =>
             println(error.getMessage) // TODO: logging
-            complete(StatusCodes.InternalServerError)
+            complete(ApiError.generic.statusCode, ApiError.generic.message)
         }
       }
     }
