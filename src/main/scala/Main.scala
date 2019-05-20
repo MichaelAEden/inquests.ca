@@ -1,7 +1,5 @@
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import akka.http.scaladsl.Http
-import akka.http.scaladsl.server.Directives._
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
@@ -16,13 +14,14 @@ object Main extends App {
 	implicit val materializer: ActorMaterializer = ActorMaterializer()
 	import system.dispatcher
 
-	def route = path("hello") {
-		get {
-			complete("Hello, world!")
-		}
-	}
+	val inquestRepository = new InMemoryInquestRepository(Seq(
+		Inquest("1", "Queen vs CBC", "some inquest"),
+		Inquest("2", "Superman vs Batman", "some inquest"),
+	))
+	val router = new InquestRouter(inquestRepository)
+	val server = new Server(router, host, port)
 
-	val binding = Http().bindAndHandle(route, host, port)
+	val binding = server.bind()
 
 	binding.onComplete {
 		case Success(_) => println("Success!")
