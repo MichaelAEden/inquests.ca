@@ -7,6 +7,7 @@ trait InquestMocks {
 		override def all(): Future[Seq[Inquest]] = Future.failed(new Exception("BOOM!"))
 		override def byId(id: String): Future[Option[Inquest]] = Future.failed(new Exception("BOOM!"))
 		override def create(createInquest: CreateInquest): Future[Inquest] = Future.failed(new Exception("BOOM!"))
+		override def update(id: String, updateInquest: UpdateInquest): Future[Inquest] = Future.failed(new Exception("BOOM!"))
 
 	}
 

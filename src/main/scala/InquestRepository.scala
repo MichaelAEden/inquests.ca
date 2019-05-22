@@ -1,3 +1,5 @@
+import InquestRepository.InquestNotFound
+
 import scala.concurrent.{ExecutionContext, Future}
 
 trait InquestRepository {
@@ -5,6 +7,13 @@ trait InquestRepository {
   def all(): Future[Seq[Inquest]]
   def byId(id: String): Future[Option[Inquest]]
   def create(createInquest: CreateInquest): Future[Inquest]
+  def update(id: String, updateInquest: UpdateInquest): Future[Inquest]
+
+}
+
+object InquestRepository {
+
+  final case class InquestNotFound(id: String) extends Exception(s"Inquest with id $id not found.")
 
 }
 
@@ -26,6 +35,26 @@ class InMemoryInquestRepository(initialInquests: Seq[Inquest] = Seq.empty)
     )
     inquests = inquests :+ inquest
     Future.successful(inquest)
+  }
+
+  override def update(id: String, updateInquest: UpdateInquest): Future[Inquest] = {
+    val i = inquests.indexWhere(_.id == id)
+
+    if (i == -1)
+      Future.failed(InquestNotFound(id))
+    else {
+      val foundInquest = inquests(i)
+      val newInquest = updateHelper(foundInquest, updateInquest)
+      inquests = inquests.updated(i, newInquest)
+      Future.successful(newInquest)
+    }
+  }
+
+  private def updateHelper(inquest: Inquest, updateInquest: UpdateInquest): Inquest = {
+    inquest.copy(
+      title = updateInquest.title.getOrElse(inquest.title),
+      description = updateInquest.description.getOrElse(inquest.description)
+    )
   }
 
 }
