@@ -7,21 +7,21 @@ class InquestRouterListSpec extends WordSpec with Matchers with ScalatestRouteTe
   import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
   import io.circe.generic.auto._
 
-  private val inquest1 = Inquest("1", "Queen vs CBC", "some inquest")
-  private val inquest2 = Inquest("2", "Superman vs Batman", "some inquest")
+  private val testInquest1 = Inquest("1", "Queen vs CBC", "some inquest")
+  private val testInquest2 = Inquest("2", "Superman vs Batman", "some inquest")
 
-  private val inquests = Seq(inquest1, inquest2)
+  private val testInquests = Seq(testInquest1, testInquest2)
 
   "InquestRouter" should {
 
     "return all inquests" in {
-      val repository = new InMemoryInquestRepository(inquests)
+      val repository = new InMemoryInquestRepository(testInquests)
       val router = new InquestRouter(repository)
 
       Get("/inquests") ~> router.route ~> check {
         status shouldBe StatusCodes.OK
         val response = responseAs[Seq[Inquest]]
-        response shouldBe inquests
+        response shouldBe testInquests
       }
     }
 
@@ -30,7 +30,7 @@ class InquestRouterListSpec extends WordSpec with Matchers with ScalatestRouteTe
       val router = new InquestRouter(repository)
 
       Get("/inquests") ~> router.route ~> check {
-        status shouldBe StatusCodes.InternalServerError
+        status shouldBe ApiError.generic.statusCode
         val response = responseAs[String]
         response shouldBe ApiError.generic.message
       }
