@@ -7,6 +7,11 @@ object ApiError {
   private def apply(statusCode: StatusCode, message: String): ApiError = new ApiError(statusCode, message)
 
   val generic: ApiError = new ApiError(StatusCodes.InternalServerError, "Unknown error.")
-  val invalidInquestTitle: ApiError = new ApiError(StatusCodes.BadRequest, "Invalid inquest title.")
+
+  def invalidInquestTitle(title: String): ApiError =
+    new ApiError(StatusCodes.BadRequest, s"Invalid inquest title: '$title'.")
+
+  def inquestNotFound(id: String): ApiError =
+    new ApiError(StatusCodes.NotFound, s"Inquest with id: '$id' not found.")
 
 }

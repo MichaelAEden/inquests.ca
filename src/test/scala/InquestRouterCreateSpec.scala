@@ -29,9 +29,10 @@ class InquestRouterCreateSpec extends WordSpec with Matchers with ScalatestRoute
       val router = new InquestRouter(repository)
 
       Post("/inquests", testCreateInquestInvalidTitle) ~> router.route ~> check {
-        status shouldBe ApiError.invalidInquestTitle.statusCode
+        val apiError = ApiError.invalidInquestTitle(testCreateInquestInvalidTitle.title)
+        status shouldBe apiError.statusCode
         val response = responseAs[String]
-        response shouldBe ApiError.invalidInquestTitle.message
+        response shouldBe apiError.message
       }
     }
 

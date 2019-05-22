@@ -29,6 +29,21 @@ class InquestRouter(inquestRepository: InquestRepository) extends Router with In
           }
         }
       }
+    } ~ path(Segment) { id: String =>
+      put {
+        entity(as[UpdateInquest]) { updateInquest =>
+          validateWith(UpdateInquestValidator)(updateInquest) {
+            handle(inquestRepository.update(id, updateInquest)) {
+              case InquestRepository.InquestNotFound(_) =>
+                ApiError.inquestNotFound(id)
+              case _ =>
+                ApiError.generic
+            } { inquest =>
+              complete(inquest)
+            }
+          }
+        }
+      }
     }
   }
 }
