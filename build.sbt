@@ -1,8 +1,13 @@
+enablePlugins(JavaAppPackaging, AshScriptPlugin)
+
 name := "inquests.ca"
 
 version := "0.1"
 
 scalaVersion := "2.12.8"
+
+dockerBaseImage := "openjdk:8-jre-alpine"
+packageName in Docker := "michaelaeden/inquests-ca"
 
 val akkaVersion = "2.5.22"
 val akkaHttpVersion = "10.1.8"
