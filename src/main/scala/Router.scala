@@ -1,7 +1,4 @@
-import akka.http.scaladsl.server.{Directives, Route}
-
-import scala.util.control.NonFatal
-import scala.util.{Failure, Success}
+import akka.http.scaladsl.server.Route
 
 trait Router {
 
@@ -15,14 +12,12 @@ class InquestRouter(inquestRepository: InquestRepository) extends Router with In
   import io.circe.generic.auto._
 
   // TODO: remove hardcoded path.
-  val buildPath = "/Users/michael/Documents/Projects/InquesterFrontend/build/"
-  val buildStaticPath = buildPath + "static"
+  private val buildPath = "/Users/michael/Documents/Projects/InquesterFrontend/build/"
+  private val buildStaticPath = buildPath + "static"
 
   // TODO: break up.
   override def route: Route = pathEndOrSingleSlash {
-    get {
-      getFromFile(buildPath + "index.html")
-    }
+    getFromFile(buildPath + "index.html")
   } ~ pathPrefix("static") {
     get {
       getFromDirectory(buildStaticPath)
