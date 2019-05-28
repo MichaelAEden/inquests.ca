@@ -14,7 +14,20 @@ class InquestRouter(inquestRepository: InquestRepository) extends Router with In
   import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
   import io.circe.generic.auto._
 
-  override def route: Route = pathPrefix("inquests") {
+  // TODO: remove hardcoded path.
+  val buildPath = "/Users/michael/Documents/Projects/InquesterFrontend/build/"
+  val buildStaticPath = buildPath + "static"
+
+  // TODO: break up.
+  override def route: Route = pathEndOrSingleSlash {
+    get {
+      getFromFile(buildPath + "index.html")
+    }
+  } ~ pathPrefix("static") {
+    get {
+      getFromDirectory(buildStaticPath)
+    }
+  } ~ pathPrefix("inquests") {
     pathEndOrSingleSlash {
       get {
         handleWithGeneric(inquestRepository.all()) { inquests =>
