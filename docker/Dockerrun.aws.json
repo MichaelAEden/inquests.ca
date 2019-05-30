@@ -1,0 +1,12 @@
+{
+  "AWSEBDockerrunVersion": "1",
+  "Logging": "/tmp/inquests-ca",
+  "Image": {
+    "Name": "michaelaeden/inquests-ca"
+  },
+  "Ports": [
+    {
+      "ContainerPort": 9000
+    }
+  ]
+}
