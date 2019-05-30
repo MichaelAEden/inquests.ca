@@ -7,15 +7,12 @@ trait StaticResourceRouter {
 
 }
 
-class LocalStaticResourceRouter extends StaticResourceRouter with Directives {
+class LocalStaticResourceRouter extends StaticResourceRouter with Directives with EnvReader {
 
-  // TODO: define common method for reading environment variables.
-  private lazy val buildPath = sys.env.getOrElse(
-    "REACT_BUILD_PATH",
-    throw new Exception("Missing environment variable: 'REACT_BUILD_PATH'")
-  )
+  private lazy val buildPath = getEnv("REACT_BUILD_PATH")
   private lazy val buildStaticPath = buildPath + "static"
 
+  // TODO: error handling.
   override def getIndex: Route = getFromFile(buildPath + "index.html")
   override def getResource: Route = getFromDirectory(buildStaticPath)
 
@@ -28,12 +25,12 @@ class S3StaticResourceRouter extends StaticResourceRouter with Directives {
 
 }
 
-object StaticResourceRouter {
+object StaticResourceRouter extends EnvReader {
 
-  def apply(): StaticResourceRouter = sys.env.get("ENV") match {
-    case Some("dev") => new LocalStaticResourceRouter
-    case Some("prod") => new S3StaticResourceRouter
-    case _ => throw new Exception
+  def apply(): StaticResourceRouter = getEnvWithDefault("ENV", "dev") match {
+    case "dev" => new LocalStaticResourceRouter
+    case "prod" => new S3StaticResourceRouter
+    case env => throw new Exception("Invalid environment: '$env'.")
   }
 
 }
