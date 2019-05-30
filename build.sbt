@@ -1,3 +1,6 @@
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
 enablePlugins(JavaAppPackaging, AshScriptPlugin)
 
 name := "inquests.ca"
@@ -6,8 +9,16 @@ version := "0.1"
 
 scalaVersion := "2.12.8"
 
+dockerUpdateLatest := true
 dockerBaseImage := "openjdk:8-jre-alpine"
-packageName in Docker := "michaelaeden/inquests-ca"
+dockerUsername := Some("michaelaeden")
+packageName in Docker := "inquests-ca"
+
+// Note that running 'sbt docker:clean' will fail because it will attempt to
+// untag the image with the below tag
+version in Docker := LocalDateTime.now.format(
+  DateTimeFormatter.ofPattern("YYYY-MM-dd_HH-mm-ss")
+)
 
 val akkaVersion = "2.5.22"
 val akkaHttpVersion = "10.1.8"
