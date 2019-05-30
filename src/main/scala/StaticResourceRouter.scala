@@ -9,9 +9,12 @@ trait StaticResourceRouter {
 
 class LocalStaticResourceRouter extends StaticResourceRouter with Directives {
 
-  // TODO: remove hardcoded paths
-  private val buildPath = "/Users/michael/Documents/Projects/InquesterFrontend/build/"
-  private val buildStaticPath = buildPath + "static"
+  // TODO: define common method for reading environment variables.
+  private lazy val buildPath = sys.env.getOrElse(
+    "REACT_BUILD_PATH",
+    throw new Exception("Missing environment variable: 'REACT_BUILD_PATH'")
+  )
+  private lazy val buildStaticPath = buildPath + "static"
 
   override def getIndex: Route = getFromFile(buildPath + "index.html")
   override def getResource: Route = getFromDirectory(buildStaticPath)
