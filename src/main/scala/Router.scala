@@ -18,32 +18,34 @@ class InquestRouter(inquestRepository: InquestRepository) extends Router with In
     staticResourceRouter.getIndex
   } ~ pathPrefix("static") {
     staticResourceRouter.getResource
-  } ~ pathPrefix("inquests") {
-    pathEndOrSingleSlash {
-      get {
-        handleWithGeneric(inquestRepository.all()) { inquests =>
-          complete(inquests)
-        }
-      } ~ post {
-        entity(as[CreateInquest]) { createInquest =>
-          validateWith(CreateInquestValidator)(createInquest) {
-            handleWithGeneric(inquestRepository.create(createInquest)) { inquest =>
-              complete(inquest)
+  } ~ pathPrefix("api") {
+    pathPrefix("inquests") {
+      pathEndOrSingleSlash {
+        get {
+          handleWithGeneric(inquestRepository.all()) { inquests =>
+            complete(inquests)
+          }
+        } ~ post {
+          entity(as[CreateInquest]) { createInquest =>
+            validateWith(CreateInquestValidator)(createInquest) {
+              handleWithGeneric(inquestRepository.create(createInquest)) { inquest =>
+                complete(inquest)
+              }
             }
           }
         }
-      }
-    } ~ path(Segment) { id: String =>
-      put {
-        entity(as[UpdateInquest]) { updateInquest =>
-          validateWith(UpdateInquestValidator)(updateInquest) {
-            handle(inquestRepository.update(id, updateInquest)) {
-              case InquestRepository.InquestNotFound(_) =>
-                ApiError.inquestNotFound(id)
-              case _ =>
-                ApiError.generic
-            } { inquest =>
-              complete(inquest)
+      } ~ path(Segment) { id: String =>
+        put {
+          entity(as[UpdateInquest]) { updateInquest =>
+            validateWith(UpdateInquestValidator)(updateInquest) {
+              handle(inquestRepository.update(id, updateInquest)) {
+                case InquestRepository.InquestNotFound(_) =>
+                  ApiError.inquestNotFound(id)
+                case _ =>
+                  ApiError.generic
+              } { inquest =>
+                complete(inquest)
+              }
             }
           }
         }
