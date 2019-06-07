@@ -16,7 +16,7 @@ class InquestRouterCreateSpec extends WordSpec with Matchers with ScalatestRoute
       val repository = new InMemoryInquestRepository()
       val router = new InquestRouter(repository)
 
-      Post("/api/inquests", testCreateInquest) ~> router.route ~> check {
+      Post("/inquests", testCreateInquest) ~> router.route ~> check {
         status shouldBe StatusCodes.OK
         val response = responseAs[Inquest]
         response.title shouldBe testCreateInquest.title
@@ -28,7 +28,7 @@ class InquestRouterCreateSpec extends WordSpec with Matchers with ScalatestRoute
       val repository = new InMemoryInquestRepository()
       val router = new InquestRouter(repository)
 
-      Post("/api/inquests", testCreateInquestInvalidTitle) ~> router.route ~> check {
+      Post("/inquests", testCreateInquestInvalidTitle) ~> router.route ~> check {
         val apiError = ApiError.invalidInquestTitle(testCreateInquestInvalidTitle.title)
         status shouldBe apiError.statusCode
         val response = responseAs[String]
@@ -40,7 +40,7 @@ class InquestRouterCreateSpec extends WordSpec with Matchers with ScalatestRoute
       val repository = new FailingRepository
       val router = new InquestRouter(repository)
 
-      Post("/api/inquests", testCreateInquest) ~> router.route ~> check {
+      Post("/inquests", testCreateInquest) ~> router.route ~> check {
         status shouldBe ApiError.generic.statusCode
         val response = responseAs[String]
         response shouldBe ApiError.generic.message

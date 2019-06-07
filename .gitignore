@@ -6,8 +6,3 @@ target/
 
 # IDE files
 .idea
-
-# Elastic Beanstalk files
-aws_eb/.elasticbeanstalk/*
-!aws_eb/.elasticbeanstalk/*.cfg.yml
-!aws_eb/.elasticbeanstalk/*.global.yml
