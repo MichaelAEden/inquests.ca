@@ -2,8 +2,6 @@ import akka.http.scaladsl.server.{Directives, Route}
 
 // This router is only used in the dev environment. In production, requests for static resources are
 // handled by Nginx.
-// TODO:       Is it possible to have an instance of Nginx running in dev?
-// TODO (cont) Then this logic can be removed, but running app requires Docker engine.
 class DevStaticResourceRouter extends Router with Directives with EnvReader {
 
   private lazy val buildPath = getEnv("REACT_BUILD_PATH")
