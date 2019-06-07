@@ -1,4 +1,4 @@
-import akka.http.scaladsl.server.Route
+import akka.http.scaladsl.server.{Directives, Route}
 
 trait Router {
 
@@ -6,50 +6,11 @@ trait Router {
 
 }
 
-class InquestRouter(inquestRepository: InquestRepository) extends Router with InquestDirectives with ValidatorDirectives {
-
-  import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
-  import io.circe.generic.auto._
+class InquestRouter(inquestRepository: InquestRepository) extends Router with Directives {
 
   private val staticResourceRouter = StaticResourceRouter()
+  private val apiRouter = new ApiRouter(inquestRepository)
 
-  // TODO: break up.
-  override def route: Route = pathEndOrSingleSlash {
-    staticResourceRouter.getIndex
-  } ~ pathPrefix("static") {
-    staticResourceRouter.getResource
-  } ~ pathPrefix("api") {
-    pathPrefix("inquests") {
-      pathEndOrSingleSlash {
-        get {
-          handleWithGeneric(inquestRepository.all()) { inquests =>
-            complete(inquests)
-          }
-        } ~ post {
-          entity(as[CreateInquest]) { createInquest =>
-            validateWith(CreateInquestValidator)(createInquest) {
-              handleWithGeneric(inquestRepository.create(createInquest)) { inquest =>
-                complete(inquest)
-              }
-            }
-          }
-        }
-      } ~ path(Segment) { id: String =>
-        put {
-          entity(as[UpdateInquest]) { updateInquest =>
-            validateWith(UpdateInquestValidator)(updateInquest) {
-              handle(inquestRepository.update(id, updateInquest)) {
-                case InquestRepository.InquestNotFound(_) =>
-                  ApiError.inquestNotFound(id)
-                case _ =>
-                  ApiError.generic
-              } { inquest =>
-                complete(inquest)
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+  override def route: Route = staticResourceRouter.route ~ apiRouter.route
+
 }

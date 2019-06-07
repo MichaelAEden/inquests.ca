@@ -1,35 +1,34 @@
 import akka.http.scaladsl.server.{Directives, Route}
 
-trait StaticResourceRouter {
-
-  def getIndex: Route
-  def getResource: Route
-
-}
-
-class LocalStaticResourceRouter extends StaticResourceRouter with Directives with EnvReader {
+// This router is only used in the dev environment. In production, requests for static resources are
+// handled by Nginx.
+// TODO:       Is it possible to have an instance of Nginx running in dev?
+// TODO (cont) Then this logic can be removed, but running app requires Docker engine.
+class DevStaticResourceRouter extends Router with Directives with EnvReader {
 
   private lazy val buildPath = getEnv("REACT_BUILD_PATH")
   private lazy val buildStaticPath = buildPath + "static"
 
   // TODO: error handling.
-  override def getIndex: Route = getFromFile(buildPath + "index.html")
-  override def getResource: Route = getFromDirectory(buildStaticPath)
+  override def route: Route = pathEndOrSingleSlash {
+    getFromFile(buildPath + "index.html")
+  } ~ pathPrefix("static") {
+    getFromDirectory(buildStaticPath)
+  }
 
 }
 
-class S3StaticResourceRouter extends StaticResourceRouter with Directives {
+class ProdStaticResourceRouter extends Router with Directives {
 
-  override def getIndex: Route = ??? // TODO
-  override def getResource: Route = ??? // TODO
+  override def route: Route = reject
 
 }
 
 object StaticResourceRouter extends EnvReader {
 
-  def apply(): StaticResourceRouter = getEnvWithDefault("ENV", "dev") match {
-    case "dev" => new LocalStaticResourceRouter
-    case "prod" => new S3StaticResourceRouter
+  def apply(): Router = getEnvWithDefault("ENV", "dev") match {
+    case "dev" => new DevStaticResourceRouter
+    case "prod" => new ProdStaticResourceRouter
     case env => throw new Exception("Invalid environment: '$env'.")
   }
 
