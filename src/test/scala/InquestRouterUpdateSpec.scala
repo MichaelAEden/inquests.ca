@@ -20,7 +20,7 @@ class InquestRouterUpdateSpec extends WordSpec with Matchers with ScalatestRoute
       val repository = new InMemoryInquestRepository(inquests)
       val router = new InquestRouter(repository)
 
-      Put(s"/inquests/$testInquestId", testUpdateInquest) ~> router.route ~> check {
+      Put(s"/api/inquests/$testInquestId", testUpdateInquest) ~> router.route ~> check {
         status shouldBe StatusCodes.OK
         val response = responseAs[Inquest]
         response shouldBe testInquest
@@ -31,7 +31,7 @@ class InquestRouterUpdateSpec extends WordSpec with Matchers with ScalatestRoute
       val repository = new InMemoryInquestRepository(inquests)
       val router = new InquestRouter(repository)
 
-      Put("/inquests/2", testUpdateInquest) ~> router.route ~> check {
+      Put("/api/inquests/2", testUpdateInquest) ~> router.route ~> check {
         val apiError = ApiError.inquestNotFound("2")
         status shouldBe apiError.statusCode
         val response = responseAs[String]
@@ -43,7 +43,7 @@ class InquestRouterUpdateSpec extends WordSpec with Matchers with ScalatestRoute
       val repository = new InMemoryInquestRepository(inquests)
       val router = new InquestRouter(repository)
 
-      Put(s"/inquests/$testInquestId", testUpdateInquestInvalidTitle) ~> router.route ~> check {
+      Put(s"/api/inquests/$testInquestId", testUpdateInquestInvalidTitle) ~> router.route ~> check {
         val apiError = ApiError.invalidInquestTitle(testUpdateInquestInvalidTitle.title.get)
         status shouldBe apiError.statusCode
         val response = responseAs[String]
@@ -55,7 +55,7 @@ class InquestRouterUpdateSpec extends WordSpec with Matchers with ScalatestRoute
       val repository = new FailingRepository
       val router = new InquestRouter(repository)
 
-      Put(s"/inquests/$testInquestId", testUpdateInquest) ~> router.route ~> check {
+      Put(s"/api/inquests/$testInquestId", testUpdateInquest) ~> router.route ~> check {
         status shouldBe ApiError.generic.statusCode
         val response = responseAs[String]
         response shouldBe ApiError.generic.message
