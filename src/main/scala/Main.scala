@@ -5,10 +5,10 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.util.{Failure, Success}
 
-object Main extends App {
+object Main extends App with EnvReader {
 
 	val host = "0.0.0.0"
-	val port = 9000
+	val port = getEnvWithDefault("PORT", "9000").toInt
 
 	implicit val system: ActorSystem = ActorSystem(name = "inquests-ca")
 	implicit val materializer: ActorMaterializer = ActorMaterializer()
