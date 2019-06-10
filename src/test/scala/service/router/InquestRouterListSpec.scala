@@ -19,11 +19,11 @@ class InquestRouterListSpec extends WordSpec with Matchers with ScalatestRouteTe
 
   private val testInquests = Seq(testInquest1, testInquest2)
 
-  "service.router.AppRouter" should {
+  "InquestRouter" should {
 
     "return all inquests" in {
       val repository = new InMemoryInquestRepository(testInquests)
-      val router = new AppRouter(repository)
+      val router = new InquestRouter(repository)
 
       Get("/api/inquests") ~> router.route ~> check {
         status shouldBe StatusCodes.OK
@@ -34,7 +34,7 @@ class InquestRouterListSpec extends WordSpec with Matchers with ScalatestRouteTe
 
     "handle repository failure in inquests route" in {
       val repository = new FailingRepository
-      val router = new AppRouter(repository)
+      val router = new InquestRouter(repository)
 
       Get("/api/inquests") ~> router.route ~> check {
         status shouldBe ApiError.generic.statusCode

@@ -9,8 +9,6 @@ class AppRouter(inquestRepository: InquestRepository) extends Router with Direct
   private val staticResourceRouter = StaticResourceRouter()
   private val inquestRouter = new InquestRouter(inquestRepository)
 
-  override def route: Route = staticResourceRouter.route ~ pathPrefix("api") {
-    inquestRouter.route
-  }
+  override def route: Route = staticResourceRouter.route ~ inquestRouter.route
 
 }

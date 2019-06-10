@@ -30,7 +30,7 @@ class HandlerDirectivesSpec extends WordSpec with Matchers with ScalatestRouteTe
     }
   }
 
-  "service.directives.HandlerDirectives" should {
+  "HandlerDirectives" should {
 
     "not return an error if the future succeeds" in {
       Get("/test/success") ~> testRoute ~> check {

@@ -16,7 +16,7 @@ trait InquestRepository {
 
 object InquestRepository {
 
-  final case class InquestNotFound(id: String) extends Exception(s"db.models.Inquest with id $id not found.")
+  final case class InquestNotFound(id: String) extends Exception(s"Inquest with id $id not found.")
 
 }
 

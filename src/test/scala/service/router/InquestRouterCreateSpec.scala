@@ -17,11 +17,11 @@ class InquestRouterCreateSpec extends WordSpec with Matchers with ScalatestRoute
   private val testCreateInquest = CreateInquest("Mega Shark vs Crocasaurus", "some inquest")
   private val testCreateInquestInvalidTitle = testCreateInquest.copy(title = "")
 
-  "service.router.AppRouter" should {
+  "InquestRouter" should {
 
     "create inquest with valid data" in {
       val repository = new InMemoryInquestRepository()
-      val router = new AppRouter(repository)
+      val router = new InquestRouter(repository)
 
       Post("/api/inquests", testCreateInquest) ~> router.route ~> check {
         status shouldBe StatusCodes.OK
@@ -33,7 +33,7 @@ class InquestRouterCreateSpec extends WordSpec with Matchers with ScalatestRoute
 
     "not create inquest with invalid data" in {
       val repository = new InMemoryInquestRepository()
-      val router = new AppRouter(repository)
+      val router = new InquestRouter(repository)
 
       Post("/api/inquests", testCreateInquestInvalidTitle) ~> router.route ~> check {
         val apiError = ApiError.invalidInquestTitle(testCreateInquestInvalidTitle.title)
@@ -45,7 +45,7 @@ class InquestRouterCreateSpec extends WordSpec with Matchers with ScalatestRoute
 
     "handle repository failure in inquests route" in {
       val repository = new FailingRepository
-      val router = new AppRouter(repository)
+      val router = new InquestRouter(repository)
 
       Post("/api/inquests", testCreateInquest) ~> router.route ~> check {
         status shouldBe ApiError.generic.statusCode

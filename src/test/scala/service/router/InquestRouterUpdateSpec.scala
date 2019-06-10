@@ -21,11 +21,11 @@ class InquestRouterUpdateSpec extends WordSpec with Matchers with ScalatestRoute
 
   private val inquests = Seq(testInquest)
 
-  "service.router.AppRouter" should {
+  "InquestRouter" should {
 
     "update an inquest with valid data" in {
       val repository = new InMemoryInquestRepository(inquests)
-      val router = new AppRouter(repository)
+      val router = new InquestRouter(repository)
 
       Put(s"/api/inquests/$testInquestId", testUpdateInquest) ~> router.route ~> check {
         status shouldBe StatusCodes.OK
@@ -36,7 +36,7 @@ class InquestRouterUpdateSpec extends WordSpec with Matchers with ScalatestRoute
 
     "return not found if inquest does not exist" in {
       val repository = new InMemoryInquestRepository(inquests)
-      val router = new AppRouter(repository)
+      val router = new InquestRouter(repository)
 
       Put("/api/inquests/2", testUpdateInquest) ~> router.route ~> check {
         val apiError = ApiError.inquestNotFound("2")
@@ -48,7 +48,7 @@ class InquestRouterUpdateSpec extends WordSpec with Matchers with ScalatestRoute
 
     "not update an inquest with invalid data" in {
       val repository = new InMemoryInquestRepository(inquests)
-      val router = new AppRouter(repository)
+      val router = new InquestRouter(repository)
 
       Put(s"/api/inquests/$testInquestId", testUpdateInquestInvalidTitle) ~> router.route ~> check {
         val apiError = ApiError.invalidInquestTitle(testUpdateInquestInvalidTitle.title.get)
@@ -60,7 +60,7 @@ class InquestRouterUpdateSpec extends WordSpec with Matchers with ScalatestRoute
 
     "handle repository failure" in {
       val repository = new FailingRepository
-      val router = new AppRouter(repository)
+      val router = new InquestRouter(repository)
 
       Put(s"/api/inquests/$testInquestId", testUpdateInquest) ~> router.route ~> check {
         status shouldBe ApiError.generic.statusCode
