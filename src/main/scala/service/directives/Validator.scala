@@ -1,3 +1,8 @@
+package service.directives
+
+import db.models.{CreateInquest, UpdateInquest}
+import service.models.ApiError
+
 trait Validator[T] {
 
   def validate(t: T): Option[ApiError]

@@ -1,3 +1,8 @@
+package mocks
+
+import db.models.{CreateInquest, Inquest, UpdateInquest}
+import db.spec.InquestRepository
+
 import scala.concurrent.Future
 
 trait InquestMocks {

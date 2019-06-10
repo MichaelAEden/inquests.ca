@@ -1,6 +1,13 @@
+package service.router
+
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import org.scalatest.{Matchers, WordSpec}
+
+import db.models.{Inquest, UpdateInquest}
+import db.spec.InMemoryInquestRepository
+import mocks.InquestMocks
+import service.models.ApiError
 
 class InquestRouterUpdateSpec extends WordSpec with Matchers with ScalatestRouteTest with InquestMocks {
 
@@ -14,11 +21,11 @@ class InquestRouterUpdateSpec extends WordSpec with Matchers with ScalatestRoute
 
   private val inquests = Seq(testInquest)
 
-  "InquestRouter" should {
+  "service.router.AppRouter" should {
 
     "update an inquest with valid data" in {
       val repository = new InMemoryInquestRepository(inquests)
-      val router = new InquestRouter(repository)
+      val router = new AppRouter(repository)
 
       Put(s"/api/inquests/$testInquestId", testUpdateInquest) ~> router.route ~> check {
         status shouldBe StatusCodes.OK
@@ -29,7 +36,7 @@ class InquestRouterUpdateSpec extends WordSpec with Matchers with ScalatestRoute
 
     "return not found if inquest does not exist" in {
       val repository = new InMemoryInquestRepository(inquests)
-      val router = new InquestRouter(repository)
+      val router = new AppRouter(repository)
 
       Put("/api/inquests/2", testUpdateInquest) ~> router.route ~> check {
         val apiError = ApiError.inquestNotFound("2")
@@ -41,7 +48,7 @@ class InquestRouterUpdateSpec extends WordSpec with Matchers with ScalatestRoute
 
     "not update an inquest with invalid data" in {
       val repository = new InMemoryInquestRepository(inquests)
-      val router = new InquestRouter(repository)
+      val router = new AppRouter(repository)
 
       Put(s"/api/inquests/$testInquestId", testUpdateInquestInvalidTitle) ~> router.route ~> check {
         val apiError = ApiError.invalidInquestTitle(testUpdateInquestInvalidTitle.title.get)
@@ -53,7 +60,7 @@ class InquestRouterUpdateSpec extends WordSpec with Matchers with ScalatestRoute
 
     "handle repository failure" in {
       val repository = new FailingRepository
-      val router = new InquestRouter(repository)
+      val router = new AppRouter(repository)
 
       Put(s"/api/inquests/$testInquestId", testUpdateInquest) ~> router.route ~> check {
         status shouldBe ApiError.generic.statusCode

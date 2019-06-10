@@ -1,6 +1,13 @@
+package service.router
+
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import org.scalatest.{Matchers, WordSpec}
+
+import db.models.Inquest
+import db.spec.InMemoryInquestRepository
+import mocks.InquestMocks
+import service.models.ApiError
 
 class InquestRouterListSpec extends WordSpec with Matchers with ScalatestRouteTest with InquestMocks {
 
@@ -12,11 +19,11 @@ class InquestRouterListSpec extends WordSpec with Matchers with ScalatestRouteTe
 
   private val testInquests = Seq(testInquest1, testInquest2)
 
-  "InquestRouter" should {
+  "service.router.AppRouter" should {
 
     "return all inquests" in {
       val repository = new InMemoryInquestRepository(testInquests)
-      val router = new InquestRouter(repository)
+      val router = new AppRouter(repository)
 
       Get("/api/inquests") ~> router.route ~> check {
         status shouldBe StatusCodes.OK
@@ -27,7 +34,7 @@ class InquestRouterListSpec extends WordSpec with Matchers with ScalatestRouteTe
 
     "handle repository failure in inquests route" in {
       val repository = new FailingRepository
-      val router = new InquestRouter(repository)
+      val router = new AppRouter(repository)
 
       Get("/api/inquests") ~> router.route ~> check {
         status shouldBe ApiError.generic.statusCode

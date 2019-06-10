@@ -1,4 +1,4 @@
-import scala.util.{Failure, Success, Try}
+package utils
 
 trait EnvReader {
 

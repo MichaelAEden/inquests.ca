@@ -1,11 +1,15 @@
+package service.directives
+
 import akka.http.scaladsl.model.StatusCodes
-import akka.http.scaladsl.server.{Directives, Route}
+import akka.http.scaladsl.server.Directives
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import org.scalatest.{Matchers, WordSpec}
 
+import service.models.ApiError
+
 import scala.concurrent.Future
 
-class InquestDirectivesSpec extends WordSpec with Matchers with ScalatestRouteTest with Directives with InquestDirectives {
+class HandlerDirectivesSpec extends WordSpec with Matchers with ScalatestRouteTest with Directives with HandlerDirectives {
 
   import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
   import io.circe.generic.auto._
@@ -26,7 +30,7 @@ class InquestDirectivesSpec extends WordSpec with Matchers with ScalatestRouteTe
     }
   }
 
-  "InquestDirectives" should {
+  "service.directives.HandlerDirectives" should {
 
     "not return an error if the future succeeds" in {
       Get("/test/success") ~> testRoute ~> check {

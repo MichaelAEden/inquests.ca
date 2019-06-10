@@ -1,3 +1,5 @@
+package service.models
+
 import akka.http.scaladsl.model.{StatusCode, StatusCodes}
 
 final case class ApiError private (statusCode: StatusCode, message: String)
@@ -12,6 +14,6 @@ object ApiError {
     new ApiError(StatusCodes.BadRequest, s"Invalid inquest title: '$title'.")
 
   def inquestNotFound(id: String): ApiError =
-    new ApiError(StatusCodes.NotFound, s"Inquest with id: '$id' not found.")
+    new ApiError(StatusCodes.NotFound, s"db.models.Inquest with id: '$id' not found.")
 
 }

@@ -1,4 +1,7 @@
-import InquestRepository.InquestNotFound
+package db.spec
+
+import db.models.{CreateInquest, Inquest, UpdateInquest}
+import db.spec.InquestRepository.InquestNotFound
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -13,7 +16,7 @@ trait InquestRepository {
 
 object InquestRepository {
 
-  final case class InquestNotFound(id: String) extends Exception(s"Inquest with id $id not found.")
+  final case class InquestNotFound(id: String) extends Exception(s"db.models.Inquest with id $id not found.")
 
 }
 
