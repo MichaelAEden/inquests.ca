@@ -1,9 +1,13 @@
+package service.directives
+
 import akka.http.scaladsl.server.{Directive1, Directives}
+
+import service.models.ApiError
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
 
-trait InquestDirectives extends Directives {
+trait HandlerDirectives extends Directives {
 
   import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
   import io.circe.generic.auto._

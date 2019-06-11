@@ -1,7 +1,6 @@
-import akka.http.scaladsl.server.{Directive0, Directives}
+package service.directives
 
-import scala.concurrent.Future
-import scala.util.{Failure, Success}
+import akka.http.scaladsl.server.{Directive0, Directives}
 
 trait ValidatorDirectives extends Directives {
 
@@ -16,4 +15,5 @@ trait ValidatorDirectives extends Directives {
         pass
     }
   }
+
 }

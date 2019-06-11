@@ -1,6 +1,13 @@
+package service.router
+
 import akka.http.scaladsl.server.Route
 
-class ApiRouter(inquestRepository: InquestRepository) extends Router with InquestDirectives with ValidatorDirectives {
+import db.models.{CreateInquest, UpdateInquest}
+import db.spec.InquestRepository
+import service.directives._
+import service.models.ApiError
+
+class InquestRouter(inquestRepository: InquestRepository) extends Router with HandlerDirectives with ValidatorDirectives {
 
   import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
   import io.circe.generic.auto._

@@ -1,4 +1,7 @@
-import InquestRepository.InquestNotFound
+package db.spec
+
+import db.models.{CreateInquest, Inquest, UpdateInquest}
+import db.spec.InquestRepository.InquestNotFound
 
 import scala.concurrent.{ExecutionContext, Future}
 

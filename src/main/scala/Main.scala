@@ -1,6 +1,12 @@
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 
+import db.models.Inquest
+import db.spec.InMemoryInquestRepository
+import service.router.AppRouter
+import service.Server
+import utils.EnvReader
+
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.util.{Failure, Success}
@@ -18,7 +24,7 @@ object Main extends App with EnvReader {
 		Inquest("1", "Queen vs CBC", "some inquest"),
 		Inquest("2", "Superman vs Batman", "some inquest"),
 	))
-	val router = new InquestRouter(inquestRepository)
+	val router = new AppRouter(inquestRepository)
 	val server = new Server(router, host, port)
 
 	val binding = server.bind()

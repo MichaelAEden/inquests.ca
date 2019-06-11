@@ -1,4 +1,8 @@
+package service.router
+
 import akka.http.scaladsl.server.{Directives, Route}
+
+import utils.EnvReader
 
 // This router is only used in the dev environment. In production, requests for static resources are
 // handled by Nginx.
