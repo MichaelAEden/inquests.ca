@@ -25,6 +25,7 @@ val akkaHttpVersion = "10.1.8"
 val circeVersion = "0.10.0"
 val akkaHttpCirceVersion = "1.25.2"
 val scalaTestVersion = "3.0.5"
+val slickVersion = "3.3.1"
 
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
@@ -39,5 +40,7 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-parser" % circeVersion,
   "de.heikoseeberger" %% "akka-http-circe" % akkaHttpCirceVersion,
 
-  "org.scalatest" %% "scalatest" % scalaTestVersion % Test
+  "org.scalatest" %% "scalatest" % scalaTestVersion % Test,
+
+  "com.typesafe.slick" %% "slick" % slickVersion
 )
