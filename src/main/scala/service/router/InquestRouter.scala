@@ -28,7 +28,7 @@ class InquestRouter(inquestRepository: InquestRepository) extends Router with Ha
             }
           }
         }
-      } ~ path(Segment) { id: String =>
+      } ~ path(IntNumber) { id: Int =>
         put {
           entity(as[UpdateInquest]) { updateInquest =>
             validateWith(UpdateInquestValidator)(updateInquest) {

@@ -14,8 +14,8 @@ class InquestRouterUpdateSpec extends WordSpec with Matchers with ScalatestRoute
   import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
   import io.circe.generic.auto._
 
-  private val testInquestId = "1"
-  private val testInquest = Inquest(testInquestId, "Queen vs CBC", "some inquest")
+  private val testInquestId = 1
+  private val testInquest = Inquest(Some(1), "Queen vs CBC", "some inquest")
   private val testUpdateInquest = UpdateInquest(Some("Queen vs CBC"), Some("some inquest"))
   private val testUpdateInquestInvalidTitle = UpdateInquest(Some(""), Some("some inquest"))
 
@@ -39,7 +39,7 @@ class InquestRouterUpdateSpec extends WordSpec with Matchers with ScalatestRoute
       val router = new InquestRouter(repository)
 
       Put("/api/inquests/2", testUpdateInquest) ~> router.route ~> check {
-        val apiError = ApiError.inquestNotFound("2")
+        val apiError = ApiError.inquestNotFound(2)
         status shouldBe apiError.statusCode
         val response = responseAs[String]
         response shouldBe apiError.message

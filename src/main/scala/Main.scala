@@ -21,8 +21,8 @@ object Main extends App with EnvReader {
 	import system.dispatcher
 
 	val inquestRepository = new InMemoryInquestRepository(Seq(
-		Inquest("1", "Queen vs CBC", "some inquest"),
-		Inquest("2", "Superman vs Batman", "some inquest"),
+		Inquest(Some(1), "Queen vs CBC", "some inquest"),
+		Inquest(Some(2), "Superman vs Batman", "some inquest"),
 	))
 	val router = new AppRouter(inquestRepository)
 	val server = new Server(router, host, port)

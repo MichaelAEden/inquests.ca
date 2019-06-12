@@ -14,8 +14,8 @@ class InquestRouterListSpec extends WordSpec with Matchers with ScalatestRouteTe
   import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
   import io.circe.generic.auto._
 
-  private val testInquest1 = Inquest("1", "Queen vs CBC", "some inquest")
-  private val testInquest2 = Inquest("2", "Superman vs Batman", "some inquest")
+  private val testInquest1 = Inquest(Some(1), "Queen vs CBC", "some inquest")
+  private val testInquest2 = Inquest(Some(2), "Superman vs Batman", "some inquest")
 
   private val testInquests = Seq(testInquest1, testInquest2)
 

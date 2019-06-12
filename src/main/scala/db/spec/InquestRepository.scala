@@ -8,15 +8,15 @@ import scala.concurrent.{ExecutionContext, Future}
 trait InquestRepository {
 
   def all(): Future[Seq[Inquest]]
-  def byId(id: String): Future[Option[Inquest]]
+  def byId(id: Int): Future[Option[Inquest]]
   def create(createInquest: CreateInquest): Future[Inquest]
-  def update(id: String, updateInquest: UpdateInquest): Future[Inquest]
+  def update(id: Int, updateInquest: UpdateInquest): Future[Inquest]
 
 }
 
 object InquestRepository {
 
-  final case class InquestNotFound(id: String) extends Exception(s"Inquest with id $id not found.")
+  final case class InquestNotFound(id: Int) extends Exception(s"Inquest with id $id not found.")
 
 }
 
@@ -28,11 +28,11 @@ class InMemoryInquestRepository(initialInquests: Seq[Inquest] = Seq.empty)
 
   override def all(): Future[Seq[Inquest]] = Future.successful(inquests)
 
-  override def byId(id: String): Future[Option[Inquest]] = Future.successful(inquests.find(_.id == id))
+  override def byId(id: Int): Future[Option[Inquest]] = Future.successful(inquests.find(_.id.get == id))
 
   override def create(createInquest: CreateInquest): Future[Inquest] = {
     val inquest = Inquest(
-      (inquests.length + 1).toString,
+      Some(inquests.length + 1),
       createInquest.title,
       createInquest.description
     )
@@ -40,8 +40,8 @@ class InMemoryInquestRepository(initialInquests: Seq[Inquest] = Seq.empty)
     Future.successful(inquest)
   }
 
-  override def update(id: String, updateInquest: UpdateInquest): Future[Inquest] = {
-    val i = inquests.indexWhere(_.id == id)
+  override def update(id: Int, updateInquest: UpdateInquest): Future[Inquest] = {
+    val i = inquests.indexWhere(_.id.get == id)
 
     if (i == -1)
       Future.failed(InquestNotFound(id))
