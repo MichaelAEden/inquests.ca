@@ -31,7 +31,7 @@ object StaticResourceRouter extends Utils {
   def apply(): Router = getEnvWithDefault("ENV", "dev") match {
     case "dev" => new DevStaticResourceRouter
     case "prod" => new ProdStaticResourceRouter
-    case env => throw new Exception("Invalid environment: '$env'.")
+    case env => throw new Exception(s"Invalid environment: '$env'.")
   }
 
 }
