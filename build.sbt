@@ -26,6 +26,7 @@ val circeVersion = "0.10.0"
 val akkaHttpCirceVersion = "1.25.2"
 val scalaTestVersion = "3.0.5"
 val slickVersion = "3.3.1"
+val mySqlConnectorVersion = "8.0.16"
 
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
@@ -42,5 +43,7 @@ libraryDependencies ++= Seq(
 
   "org.scalatest" %% "scalatest" % scalaTestVersion % Test,
 
-  "com.typesafe.slick" %% "slick" % slickVersion
+  "com.typesafe.slick" %% "slick" % slickVersion,
+  "com.typesafe.slick" %% "slick-hikaricp" % slickVersion,
+  "mysql" % "mysql-connector-java" % mySqlConnectorVersion
 )
