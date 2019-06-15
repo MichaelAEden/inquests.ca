@@ -2,13 +2,16 @@ package service.router
 
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.{BeforeAndAfter, Matchers, WordSpec}
 
 import db.models.Inquest
 import mocks.InquestMocks
 import service.models.ApiError
 
-class InquestRouterListSpec extends WordSpec with Matchers with ScalatestRouteTest with InquestMocks {
+import scala.concurrent.Await
+import scala.concurrent.duration._
+
+class InquestRouterListSpec extends WordSpec with BeforeAndAfter with Matchers with ScalatestRouteTest with InquestMocks {
 
   import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
   import io.circe.generic.auto._
@@ -18,11 +21,22 @@ class InquestRouterListSpec extends WordSpec with Matchers with ScalatestRouteTe
 
   private val testInquests = Seq(testInquest1, testInquest2)
 
+  private val timeout = 500.milliseconds
+
+  private val inquestRepository = testRepository
+
+  before {
+    Await.result(inquestRepository.init(testInquests), timeout)
+  }
+
+  after {
+    Await.result(inquestRepository.drop(), timeout)
+  }
+
   "InquestRouter" should {
 
     "return all inquests" in {
-      val repository = testRepository
-      val router = new InquestRouter(repository)
+      val router = new InquestRouter(inquestRepository)
 
       Get("/api/inquests") ~> router.route ~> check {
         status shouldBe StatusCodes.OK

@@ -1,12 +1,16 @@
 package db.spec
 
-import slick.lifted.{ProvenShape, Rep, Tag}
-import slick.jdbc.MySQLProfile.api._
+import slick.lifted.ProvenShape
+import slick.dbio.DBIOAction
 
 import db.models.Inquest
 
+import scala.concurrent.Future
+
 // An Inquest table with 3 columns: id, title, description
 trait InquestTable { this: Db =>
+
+  import config.profile.api._
 
   class Inquests(tag: Tag) extends Table[Inquest](tag, "inquest") {
 
@@ -19,5 +23,16 @@ trait InquestTable { this: Db =>
   }
 
   val inquests = TableQuery[Inquests]
+
+  // TODO: create Table trait with these methods, or move them somewhere more appropriate.
+  // Note these functions are only used for tests.
+  def init(initialInquests: Seq[Inquest] = Seq.empty): Future[Unit] = {
+    db.run(DBIOAction.seq(
+      inquests.schema.create,
+      inquests ++= initialInquests
+    ))
+  }
+
+  def drop(): Future[Unit] = db.run(DBIOAction.seq(inquests.schema.drop))
 
 }

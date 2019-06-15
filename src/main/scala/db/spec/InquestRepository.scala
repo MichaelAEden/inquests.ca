@@ -1,8 +1,10 @@
 package db.spec
 
+import slick.basic.DatabaseConfig
+import slick.jdbc.JdbcProfile
+
 import db.models.{CreateInquest, Inquest, UpdateInquest}
 import db.spec.InquestRepository.InquestNotFound
-import slick.jdbc.JdbcBackend.Database
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -21,12 +23,13 @@ object InquestRepository {
 
 }
 
-class SlickInquestRepository(database: Database)(implicit ec: ExecutionContext)
+class SlickInquestRepository(databaseConfig: DatabaseConfig[JdbcProfile])(implicit ec: ExecutionContext)
   extends InquestRepository with Db with InquestTable {
 
-  import slick.jdbc.MySQLProfile.api._
+  override val db = databaseConfig.db
+  override val config = databaseConfig
 
-  override val db = database
+  import config.profile.api._
 
   override def all(): Future[Seq[Inquest]] = db.run(inquests.result)
 

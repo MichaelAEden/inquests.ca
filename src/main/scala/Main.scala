@@ -1,6 +1,7 @@
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import slick.jdbc.JdbcBackend.Database
+import slick.basic.DatabaseConfig
+import slick.jdbc.JdbcProfile
 
 import db.spec.SlickInquestRepository
 import service.router.AppRouter
@@ -21,8 +22,8 @@ object Main extends App with EnvReader {
   implicit val materializer: ActorMaterializer = ActorMaterializer()
   import system.dispatcher
 
-  val db = Database.forConfig("slick.mysql.local")
-  val repository = new SlickInquestRepository(db)
+  val databaseConfig = DatabaseConfig.forConfig[JdbcProfile]("slick.mysql.local")
+  val repository = new SlickInquestRepository(databaseConfig)
   val router = new AppRouter(repository)
   val server = new Server(router, host, port)
 
