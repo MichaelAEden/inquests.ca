@@ -1,7 +1,6 @@
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import slick.basic.DatabaseConfig
-import slick.jdbc.JdbcProfile
+
 import db.spec.{Db, SlickInquestRepository}
 import service.router.AppRouter
 import service.Server
