@@ -6,14 +6,14 @@ import slick.jdbc.JdbcProfile
 import db.spec.SlickInquestRepository
 import service.router.AppRouter
 import service.Server
-import utils.EnvReader
+import utils.Utils
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.util.{Failure, Success}
 
 // TODO: use scalafmt.
-object Main extends App with EnvReader {
+object Main extends App with Utils {
 
   val host = "0.0.0.0"
   val port = getEnvWithDefault("PORT", "9000").toInt
