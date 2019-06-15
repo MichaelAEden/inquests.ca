@@ -19,7 +19,7 @@ class InquestRouterCreateSpec extends WordSpec with BeforeAndAfter with Matchers
   private val testCreateInquest = CreateInquest("Mega Shark vs Crocasaurus", "some inquest")
   private val testCreateInquestInvalidTitle = testCreateInquest.copy(title = "")
 
-  private val timeout = 500.milliseconds
+  private val timeout = 5.seconds
 
   private val inquestRepository = testRepository
 

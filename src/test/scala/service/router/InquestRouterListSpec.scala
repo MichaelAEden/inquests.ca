@@ -21,7 +21,7 @@ class InquestRouterListSpec extends WordSpec with BeforeAndAfter with Matchers w
 
   private val testInquests = Seq(testInquest1, testInquest2)
 
-  private val timeout = 500.milliseconds
+  private val timeout = 5.seconds
 
   private val inquestRepository = testRepository
 
