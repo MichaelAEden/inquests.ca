@@ -5,7 +5,6 @@ import akka.http.scaladsl.testkit.ScalatestRouteTest
 import org.scalatest.{Matchers, WordSpec}
 
 import db.models.{Inquest, UpdateInquest}
-import db.spec.InMemoryInquestRepository
 import mocks.InquestMocks
 import service.models.ApiError
 
@@ -24,7 +23,7 @@ class InquestRouterUpdateSpec extends WordSpec with Matchers with ScalatestRoute
   "InquestRouter" should {
 
     "update an inquest with valid data" in {
-      val repository = new InMemoryInquestRepository(inquests)
+      val repository = testRepository
       val router = new InquestRouter(repository)
 
       Put(s"/api/inquests/$testInquestId", testUpdateInquest) ~> router.route ~> check {
@@ -35,7 +34,7 @@ class InquestRouterUpdateSpec extends WordSpec with Matchers with ScalatestRoute
     }
 
     "return not found if inquest does not exist" in {
-      val repository = new InMemoryInquestRepository(inquests)
+      val repository = testRepository
       val router = new InquestRouter(repository)
 
       Put("/api/inquests/2", testUpdateInquest) ~> router.route ~> check {
@@ -47,7 +46,7 @@ class InquestRouterUpdateSpec extends WordSpec with Matchers with ScalatestRoute
     }
 
     "not update an inquest with invalid data" in {
-      val repository = new InMemoryInquestRepository(inquests)
+      val repository = testRepository
       val router = new InquestRouter(repository)
 
       Put(s"/api/inquests/$testInquestId", testUpdateInquestInvalidTitle) ~> router.route ~> check {

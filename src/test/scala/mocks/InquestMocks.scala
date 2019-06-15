@@ -1,11 +1,19 @@
 package mocks
 
+import slick.jdbc.JdbcBackend.Database
+
 import db.models.{CreateInquest, Inquest, UpdateInquest}
-import db.spec.InquestRepository
+import db.spec.{InquestRepository, SlickInquestRepository}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
+// TODO: Mockito
 trait InquestMocks {
+
+	def testRepository(implicit ec: ExecutionContext): InquestRepository = {
+		val db = Database.forConfig("slick.mysql.local")
+		new SlickInquestRepository(db)
+	}
 
 	class FailingRepository extends InquestRepository {
 

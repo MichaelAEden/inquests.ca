@@ -5,7 +5,6 @@ import akka.http.scaladsl.testkit.ScalatestRouteTest
 import org.scalatest.{Matchers, WordSpec}
 
 import db.models.{CreateInquest, Inquest}
-import db.spec.InMemoryInquestRepository
 import mocks.InquestMocks
 import service.models.ApiError
 
@@ -20,7 +19,7 @@ class InquestRouterCreateSpec extends WordSpec with Matchers with ScalatestRoute
   "InquestRouter" should {
 
     "create inquest with valid data" in {
-      val repository = new InMemoryInquestRepository()
+      val repository = testRepository
       val router = new InquestRouter(repository)
 
       Post("/api/inquests", testCreateInquest) ~> router.route ~> check {
@@ -32,7 +31,7 @@ class InquestRouterCreateSpec extends WordSpec with Matchers with ScalatestRoute
     }
 
     "not create inquest with invalid data" in {
-      val repository = new InMemoryInquestRepository()
+      val repository = testRepository
       val router = new InquestRouter(repository)
 
       Post("/api/inquests", testCreateInquestInvalidTitle) ~> router.route ~> check {

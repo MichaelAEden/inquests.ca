@@ -5,7 +5,6 @@ import akka.http.scaladsl.testkit.ScalatestRouteTest
 import org.scalatest.{Matchers, WordSpec}
 
 import db.models.Inquest
-import db.spec.InMemoryInquestRepository
 import mocks.InquestMocks
 import service.models.ApiError
 
@@ -22,7 +21,7 @@ class InquestRouterListSpec extends WordSpec with Matchers with ScalatestRouteTe
   "InquestRouter" should {
 
     "return all inquests" in {
-      val repository = new InMemoryInquestRepository(testInquests)
+      val repository = testRepository
       val router = new InquestRouter(repository)
 
       Get("/api/inquests") ~> router.route ~> check {
