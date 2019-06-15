@@ -2,8 +2,7 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import slick.basic.DatabaseConfig
 import slick.jdbc.JdbcProfile
-
-import db.spec.SlickInquestRepository
+import db.spec.{Db, SlickInquestRepository}
 import service.router.AppRouter
 import service.Server
 import utils.Utils
@@ -22,7 +21,7 @@ object Main extends App with Utils {
   implicit val materializer: ActorMaterializer = ActorMaterializer()
   import system.dispatcher
 
-  val databaseConfig = DatabaseConfig.forConfig[JdbcProfile]("slick.mysql.local")
+  val databaseConfig = Db.getConfig
   val repository = new SlickInquestRepository(databaseConfig)
   val router = new AppRouter(repository)
   val server = new Server(router, host, port)
