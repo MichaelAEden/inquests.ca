@@ -25,14 +25,13 @@ trait InquestTable { this: Db =>
   val inquests = TableQuery[Inquests]
 
   // TODO: create Table trait with these methods, or move them somewhere more appropriate.
-  // Note these functions are only used for tests.
+  // Note these functions would only be used for integration tests.
   def init(initialInquests: Seq[Inquest] = Seq.empty): Future[Unit] = {
     db.run(DBIOAction.seq(
       inquests.schema.create,
       inquests ++= initialInquests
     ))
   }
-
   def drop(): Future[Unit] = db.run(DBIOAction.seq(inquests.schema.drop))
 
 }
