@@ -1,5 +1,8 @@
 package db.spec
 
+import slick.basic.DatabaseConfig
+import slick.jdbc.JdbcProfile
+
 import db.models.{CreateInquest, Inquest, UpdateInquest}
 import db.spec.InquestRepository.InquestNotFound
 
@@ -8,56 +11,56 @@ import scala.concurrent.{ExecutionContext, Future}
 trait InquestRepository {
 
   def all(): Future[Seq[Inquest]]
-  def byId(id: String): Future[Option[Inquest]]
+  def byId(id: Int): Future[Option[Inquest]]
   def create(createInquest: CreateInquest): Future[Inquest]
-  def update(id: String, updateInquest: UpdateInquest): Future[Inquest]
+  def update(id: Int, updateInquest: UpdateInquest): Future[Inquest]
 
 }
 
 object InquestRepository {
 
-  final case class InquestNotFound(id: String) extends Exception(s"Inquest with id $id not found.")
+  final case class InquestNotFound(id: Int) extends Exception(s"Inquest with id $id not found.")
 
 }
 
-// TODO: use DB
-class InMemoryInquestRepository(initialInquests: Seq[Inquest] = Seq.empty)
-                               (implicit ec: ExecutionContext) extends InquestRepository {
+class SlickInquestRepository(databaseConfig: DatabaseConfig[JdbcProfile])(implicit ec: ExecutionContext)
+  extends InquestRepository with Db with InquestTable {
 
-  private var inquests = initialInquests.toVector
+  override val db = databaseConfig.db
+  override val config = databaseConfig
 
-  override def all(): Future[Seq[Inquest]] = Future.successful(inquests)
+  import config.profile.api._
 
-  override def byId(id: String): Future[Option[Inquest]] = Future.successful(inquests.find(_.id == id))
+  override def all(): Future[Seq[Inquest]] = db.run(inquests.result)
+
+  override def byId(id: Int): Future[Option[Inquest]] = {
+    val q = inquests.filter(_.id === id).take(1)
+    db.run(q.result).map(_.headOption)
+  }
 
   override def create(createInquest: CreateInquest): Future[Inquest] = {
-    val inquest = Inquest(
-      (inquests.length + 1).toString,
-      createInquest.title,
-      createInquest.description
-    )
-    inquests = inquests :+ inquest
-    Future.successful(inquest)
+    val inquest = createInquest.toInquest()
+    val q = (
+      inquests returning inquests.map(_.id) into ((_, id) => inquest.copy(id = Some(id)))
+    ) += inquest
+    db.run(q)
   }
 
-  override def update(id: String, updateInquest: UpdateInquest): Future[Inquest] = {
-    val i = inquests.indexWhere(_.id == id)
+  override def update(id: Int, updateInquest: UpdateInquest): Future[Inquest] = {
+    // TODO: reduce two db queries to one.
+    for {
+      result <- byId(id)
+      inquest = result.getOrElse(throw InquestNotFound(id))
+      newInquest = updateInquest.toInquest(inquest)
 
-    if (i == -1)
-      Future.failed(InquestNotFound(id))
-    else {
-      val foundInquest = inquests(i)
-      val newInquest = updateHelper(foundInquest, updateInquest)
-      inquests = inquests.updated(i, newInquest)
-      Future.successful(newInquest)
-    }
-  }
+      q = inquests
+        .filter(_.id === id)
+        .map(inquest => (inquest.title, inquest.description))
+        .update((newInquest.title, newInquest.description))
 
-  private def updateHelper(inquest: Inquest, updateInquest: UpdateInquest): Inquest = {
-    inquest.copy(
-      title = updateInquest.title.getOrElse(inquest.title),
-      description = updateInquest.description.getOrElse(inquest.description)
-    )
+      // TODO: ensure db query ran successfully.
+      _ <- db.run(q)
+    } yield newInquest
   }
 
 }

@@ -23,8 +23,7 @@ version in Docker := LocalDateTime.now.format(
 val akkaVersion = "2.5.22"
 val akkaHttpVersion = "10.1.8"
 val circeVersion = "0.10.0"
-val akkaHttpCirceVersion = "1.25.2"
-val scalaTestVersion = "3.0.5"
+val slickVersion = "3.3.1"
 
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
@@ -37,7 +36,14 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-core" % circeVersion,
   "io.circe" %% "circe-generic" % circeVersion,
   "io.circe" %% "circe-parser" % circeVersion,
-  "de.heikoseeberger" %% "akka-http-circe" % akkaHttpCirceVersion,
+  "de.heikoseeberger" %% "akka-http-circe" % "1.25.2",
 
-  "org.scalatest" %% "scalatest" % scalaTestVersion % Test
+  "org.scalatest" %% "scalatest" % "3.0.5" % Test,
+  "org.scalamock" %% "scalamock" % "4.1.0" % Test,
+
+  "com.typesafe.slick" %% "slick" % slickVersion,
+  "com.typesafe.slick" %% "slick-hikaricp" % slickVersion,
+  "mysql" % "mysql-connector-java" % "8.0.16",
+  "com.h2database" % "h2" % "1.3.148",
+  "org.slf4j" % "slf4j-nop" % "1.6.4"
 )

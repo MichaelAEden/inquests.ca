@@ -13,7 +13,7 @@ object ApiError {
   def invalidInquestTitle(title: String): ApiError =
     new ApiError(StatusCodes.BadRequest, s"Invalid inquest title: '$title'.")
 
-  def inquestNotFound(id: String): ApiError =
+  def inquestNotFound(id: Int): ApiError =
     new ApiError(StatusCodes.NotFound, s"Inquest with id: '$id' not found.")
 
 }
