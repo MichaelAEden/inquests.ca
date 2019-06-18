@@ -39,6 +39,7 @@ libraryDependencies ++= Seq(
   "de.heikoseeberger" %% "akka-http-circe" % "1.25.2",
 
   "org.scalatest" %% "scalatest" % "3.0.5" % Test,
+  "org.scalamock" %% "scalamock" % "4.1.0" % Test,
 
   "com.typesafe.slick" %% "slick" % slickVersion,
   "com.typesafe.slick" %% "slick-hikaricp" % slickVersion,

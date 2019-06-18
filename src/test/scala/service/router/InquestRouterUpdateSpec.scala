@@ -2,16 +2,17 @@ package service.router
 
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import org.scalatest.{BeforeAndAfter, Matchers, WordSpec}
+import org.scalamock.scalatest.MockFactory
+import org.scalatest.{Matchers, WordSpec}
 
 import db.models.{Inquest, UpdateInquest}
-import mocks.InquestMocks
+import db.spec.InquestRepository
+import db.spec.InquestRepository.InquestNotFound
 import service.models.ApiError
 
-import scala.concurrent.Await
-import scala.concurrent.duration._
+import scala.concurrent.Future
 
-class InquestRouterUpdateSpec extends WordSpec with BeforeAndAfter with Matchers with ScalatestRouteTest with InquestMocks {
+class InquestRouterUpdateSpec extends WordSpec with Matchers with ScalatestRouteTest with MockFactory {
 
   import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
   import io.circe.generic.auto._
@@ -23,22 +24,15 @@ class InquestRouterUpdateSpec extends WordSpec with BeforeAndAfter with Matchers
 
   private val testInquests = Seq(testInquest)
 
-  private val timeout = 5.seconds
-
-  private val inquestRepository = testRepository
-
-  before {
-    Await.result(inquestRepository.init(testInquests), timeout)
-  }
-
-  after {
-    Await.result(inquestRepository.drop(), timeout)
-  }
-
   "InquestRouter" should {
 
     "update an inquest with valid data" in {
-      val router = new InquestRouter(inquestRepository)
+      val mockInquestRepository = mock[InquestRepository]
+      val router = new InquestRouter(mockInquestRepository)
+
+      (mockInquestRepository.update _)
+        .expects(testInquestId, testUpdateInquest)
+        .returns(Future.successful(testInquest))
 
       Put(s"/api/inquests/$testInquestId", testUpdateInquest) ~> router.route ~> check {
         status shouldBe StatusCodes.OK
@@ -48,7 +42,12 @@ class InquestRouterUpdateSpec extends WordSpec with BeforeAndAfter with Matchers
     }
 
     "return not found if inquest does not exist" in {
-      val router = new InquestRouter(inquestRepository)
+      val mockInquestRepository = mock[InquestRepository]
+      val router = new InquestRouter(mockInquestRepository)
+
+      (mockInquestRepository.update _)
+        .expects(2, testUpdateInquest)
+        .returns(Future.failed(InquestNotFound(2)))
 
       Put("/api/inquests/2", testUpdateInquest) ~> router.route ~> check {
         val apiError = ApiError.inquestNotFound(2)
@@ -59,7 +58,12 @@ class InquestRouterUpdateSpec extends WordSpec with BeforeAndAfter with Matchers
     }
 
     "not update an inquest with invalid data" in {
-      val router = new InquestRouter(inquestRepository)
+      val mockInquestRepository = mock[InquestRepository]
+      val router = new InquestRouter(mockInquestRepository)
+
+      (mockInquestRepository.update _)
+        .expects(*, *)
+        .never
 
       Put(s"/api/inquests/$testInquestId", testUpdateInquestInvalidTitle) ~> router.route ~> check {
         val apiError = ApiError.invalidInquestTitle(testUpdateInquestInvalidTitle.title.get)
@@ -70,8 +74,12 @@ class InquestRouterUpdateSpec extends WordSpec with BeforeAndAfter with Matchers
     }
 
     "handle repository failure" in {
-      val repository = new FailingRepository
-      val router = new InquestRouter(repository)
+      val mockInquestRepository = mock[InquestRepository]
+      val router = new InquestRouter(mockInquestRepository)
+
+      (mockInquestRepository.update _)
+        .expects(testInquestId, testUpdateInquest)
+        .returns(Future.failed(new Exception("BOOM!")))
 
       Put(s"/api/inquests/$testInquestId", testUpdateInquest) ~> router.route ~> check {
         status shouldBe ApiError.generic.statusCode
