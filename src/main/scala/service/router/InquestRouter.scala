@@ -19,32 +19,34 @@ class InquestRouter(inquestRepository: InquestRepository) extends Router with Ha
           handleWithGeneric(inquestRepository.all()) { inquests =>
             complete(inquests)
           }
-        } ~ post {
-          entity(as[CreateInquest]) { createInquest =>
-            validateWith(CreateInquestValidator)(createInquest) {
-              handleWithGeneric(inquestRepository.create(createInquest)) { inquest =>
-                complete(inquest)
-              }
-            }
-          }
-        }
-      } ~ path(IntNumber) { id: Int =>
-        put {
-          entity(as[UpdateInquest]) { updateInquest =>
-            validateWith(UpdateInquestValidator)(updateInquest) {
-              handle(inquestRepository.update(id, updateInquest)) {
-                case InquestRepository.InquestNotFound(_) =>
-                  ApiError.inquestNotFound(id)
-                case _ =>
-                  ApiError.generic
-              } { inquest =>
-                complete(inquest)
-              }
-            }
-          }
         }
       }
     }
   }
+  // ~ post {
+  //   entity(as[CreateInquest]) { createInquest =>
+  //     validateWith(CreateInquestValidator)(createInquest) {
+  //       handleWithGeneric(inquestRepository.create(createInquest)) { inquest =>
+  //         complete(inquest)
+  //       }
+  //     }
+  //   }
+  // }
+  // ~ path(IntNumber) { id: Int =>
+  //   put {
+  //     entity(as[UpdateInquest]) { updateInquest =>
+  //       validateWith(UpdateInquestValidator)(updateInquest) {
+  //         handle(inquestRepository.update(id, updateInquest)) {
+  //           case InquestRepository.InquestNotFound(_) =>
+  //             ApiError.inquestNotFound(id)
+  //           case _ =>
+  //             ApiError.generic
+  //         } { inquest =>
+  //           complete(inquest)
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 
 }
