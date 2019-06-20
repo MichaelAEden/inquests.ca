@@ -14,7 +14,8 @@ dockerBaseImage := "openjdk:8-jre-alpine"
 dockerUsername := Some("michaelaeden")
 packageName in Docker := "inquests-ca"
 
-// Note these methods assume image is built from within project directory
+// Note these methods assume image is built from within project directory.
+// Run 'reload' in the sbt console to get the latest values.
 def isMaster: Boolean = {
   val branchName = ("git rev-parse --abbrev-ref HEAD".!!).trim
   branchName == "master"
