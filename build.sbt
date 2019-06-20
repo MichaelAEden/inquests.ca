@@ -1,5 +1,6 @@
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import sys.process._
 
 enablePlugins(JavaAppPackaging, AshScriptPlugin)
 
@@ -9,16 +10,31 @@ version := "0.1"
 
 scalaVersion := "2.12.8"
 
-dockerUpdateLatest := true
 dockerBaseImage := "openjdk:8-jre-alpine"
 dockerUsername := Some("michaelaeden")
 packageName in Docker := "inquests-ca"
 
-// Note that running 'sbt docker:clean' will fail because it will attempt to
-// untag the image with the below tag
-version in Docker := LocalDateTime.now.format(
-  DateTimeFormatter.ofPattern("YYYY-MM-dd_HH-mm-ss")
-)
+// Note these methods assume image is built from within project directory.
+// Run 'reload' in the sbt console to get the latest values.
+def isMaster: Boolean = {
+  val branchName = ("git rev-parse --abbrev-ref HEAD".!!).trim
+  branchName == "master"
+}
+
+def imageTag: String = {
+  val branchName = ("git rev-parse --abbrev-ref HEAD".!!).trim
+  val commitHash = ("git rev-parse HEAD".!!).trim.substring(0, 8)
+  val date = LocalDateTime.now.format(DateTimeFormatter.ofPattern("YYYY-MM-dd"))
+
+  s"${branchName}__${commitHash}__${date}"
+}
+
+// Only update latest tag if current branch is master
+dockerUpdateLatest := isMaster
+
+// Note that running 'sbt docker:clean' may fail because it will attempt to
+// untag an image with a tag that does not exist
+version in Docker := imageTag
 
 val akkaVersion = "2.5.22"
 val akkaHttpVersion = "10.1.8"
