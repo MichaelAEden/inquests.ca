@@ -1,5 +1,6 @@
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import sys.process._
 
 enablePlugins(JavaAppPackaging, AshScriptPlugin)
 
@@ -14,11 +15,17 @@ dockerBaseImage := "openjdk:8-jre-alpine"
 dockerUsername := Some("michaelaeden")
 packageName in Docker := "inquests-ca"
 
-// Note that running 'sbt docker:clean' will fail because it will attempt to
-// untag the image with the below tag
-version in Docker := LocalDateTime.now.format(
-  DateTimeFormatter.ofPattern("YYYY-MM-dd_HH-mm-ss")
-)
+def imageTag: String = {
+  val branchName = ("git rev-parse --abbrev-ref HEAD".!!).trim
+  val commitHash = ("git rev-parse HEAD".!!).trim.substring(0, 8)
+  val date = LocalDateTime.now.format(DateTimeFormatter.ofPattern("YYYY-MM-dd"))
+
+  s"${branchName}__${commitHash}__${date}"
+}
+
+// Note that running 'sbt docker:clean' may fail because it will attempt to
+// untag an image with a tag that does not exist
+version in Docker := imageTag
 
 val akkaVersion = "2.5.22"
 val akkaHttpVersion = "10.1.8"
