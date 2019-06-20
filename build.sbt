@@ -10,10 +10,15 @@ version := "0.1"
 
 scalaVersion := "2.12.8"
 
-dockerUpdateLatest := true
 dockerBaseImage := "openjdk:8-jre-alpine"
 dockerUsername := Some("michaelaeden")
 packageName in Docker := "inquests-ca"
+
+// Note these methods assume image is built from within project directory
+def isMaster: Boolean = {
+  val branchName = ("git rev-parse --abbrev-ref HEAD".!!).trim
+  branchName == "master"
+}
 
 def imageTag: String = {
   val branchName = ("git rev-parse --abbrev-ref HEAD".!!).trim
@@ -22,6 +27,9 @@ def imageTag: String = {
 
   s"${branchName}__${commitHash}__${date}"
 }
+
+// Only update latest tag if current branch is master
+dockerUpdateLatest := isMaster
 
 // Note that running 'sbt docker:clean' may fail because it will attempt to
 // untag an image with a tag that does not exist
