@@ -61,5 +61,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.slick" %% "slick-hikaricp" % slickVersion,
   "mysql" % "mysql-connector-java" % "8.0.16",
   "com.h2database" % "h2" % "1.3.148",
-  "org.slf4j" % "slf4j-nop" % "1.6.4"
+  "org.slf4j" % "slf4j-nop" % "1.6.4",
+
+  "com.google.firebase" % "firebase-admin" % "6.8.1"
 )
