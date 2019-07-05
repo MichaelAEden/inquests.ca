@@ -17,16 +17,16 @@ packageName in Docker := "inquests-ca"
 // Note these methods assume image is built from within project directory.
 // Run 'reload' in the sbt console to get the latest values.
 def isMaster: Boolean = {
-  val branchName = ("git rev-parse --abbrev-ref HEAD".!!).trim
+  val branchName = "git rev-parse --abbrev-ref HEAD".!!.trim
   branchName == "master"
 }
 
 def imageTag: String = {
-  val branchName = ("git rev-parse --abbrev-ref HEAD".!!).trim
-  val commitHash = ("git rev-parse HEAD".!!).trim.substring(0, 8)
+  val branchName = "git rev-parse --abbrev-ref HEAD".!!.trim
+  val commitHash = "git rev-parse HEAD".!!.trim.substring(0, 8)
   val date = LocalDateTime.now.format(DateTimeFormatter.ofPattern("YYYY-MM-dd"))
 
-  s"${branchName}__${commitHash}__${date}"
+  s"${branchName}__${commitHash}__$date"
 }
 
 // Only update latest tag if current branch is master
