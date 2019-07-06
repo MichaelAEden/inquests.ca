@@ -7,7 +7,8 @@ import db.spec.InquestRepository
 import service.directives._
 import service.models.ApiError
 
-class InquestRouter(inquestRepository: InquestRepository) extends Router with HandlerDirectives with ValidatorDirectives {
+class InquestRouter(inquestRepository: InquestRepository)
+  extends Router with AuthenticationDirectives with HandlerDirectives with ValidatorDirectives {
 
   import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
   import io.circe.generic.auto._
@@ -19,19 +20,20 @@ class InquestRouter(inquestRepository: InquestRepository) extends Router with Ha
           handleWithGeneric(inquestRepository.all()) { inquests =>
             complete(inquests)
           }
+        } ~ post {
+          authenticateUser { _ =>
+            entity(as[CreateInquest]) { createInquest =>
+              validateWith(CreateInquestValidator)(createInquest) {
+                handleWithGeneric(inquestRepository.create(createInquest)) { inquest =>
+                  complete(inquest)
+                }
+              }
+            }
+          }
         }
       }
     }
   }
-  // ~ post {
-  //   entity(as[CreateInquest]) { createInquest =>
-  //     validateWith(CreateInquestValidator)(createInquest) {
-  //       handleWithGeneric(inquestRepository.create(createInquest)) { inquest =>
-  //         complete(inquest)
-  //       }
-  //     }
-  //   }
-  // }
   // ~ path(IntNumber) { id: Int =>
   //   put {
   //     entity(as[UpdateInquest]) { updateInquest =>
