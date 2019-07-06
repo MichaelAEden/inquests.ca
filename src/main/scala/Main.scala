@@ -1,5 +1,7 @@
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
+import com.google.auth.oauth2.GoogleCredentials
+import com.google.firebase.{FirebaseApp, FirebaseOptions}
 
 import db.spec.{Db, SlickInquestRepository}
 import service.router.AppRouter
@@ -15,6 +17,12 @@ object Main extends App with Utils {
 
   val host = "0.0.0.0"
   val port = getEnvWithDefault("PORT", "9000").toInt
+
+  // Firebase config
+  val firebaseOptions: FirebaseOptions = new FirebaseOptions.Builder()
+    .setCredentials(GoogleCredentials.getApplicationDefault)
+    .build()
+  FirebaseApp.initializeApp(firebaseOptions)
 
   implicit val system: ActorSystem = ActorSystem(name = "inquests-ca")
   implicit val materializer: ActorMaterializer = ActorMaterializer()
