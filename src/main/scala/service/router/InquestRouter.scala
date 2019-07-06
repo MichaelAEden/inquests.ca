@@ -31,24 +31,25 @@ class InquestRouter(inquestRepository: InquestRepository)
             }
           }
         }
+      } ~ path(IntNumber) { id: Int =>
+       put {
+         authenticateUser { _ =>
+           entity(as[UpdateInquest]) { updateInquest =>
+             validateWith(UpdateInquestValidator)(updateInquest) {
+               handle(inquestRepository.update(id, updateInquest)) {
+                 case InquestRepository.InquestNotFound(_) =>
+                   ApiError.inquestNotFound(id)
+                 case _ =>
+                   ApiError.generic
+               } { inquest =>
+                 complete(inquest)
+               }
+             }
+           }
+         }
+       }
       }
     }
   }
-  // ~ path(IntNumber) { id: Int =>
-  //   put {
-  //     entity(as[UpdateInquest]) { updateInquest =>
-  //       validateWith(UpdateInquestValidator)(updateInquest) {
-  //         handle(inquestRepository.update(id, updateInquest)) {
-  //           case InquestRepository.InquestNotFound(_) =>
-  //             ApiError.inquestNotFound(id)
-  //           case _ =>
-  //             ApiError.generic
-  //         } { inquest =>
-  //           complete(inquest)
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
 
 }
