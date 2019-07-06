@@ -21,7 +21,7 @@ class InquestRouter(inquestRepository: InquestRepository)
             complete(inquests)
           }
         } ~ post {
-          authenticateUser { _ =>
+          authenticateAdmin { _ =>
             entity(as[CreateInquest]) { createInquest =>
               validateWith(CreateInquestValidator)(createInquest) {
                 handleWithGeneric(inquestRepository.create(createInquest)) { inquest =>
@@ -37,7 +37,7 @@ class InquestRouter(inquestRepository: InquestRepository)
             complete(inquest)
           }
         } ~ put {
-         authenticateUser { _ =>
+         authenticateAdmin { _ =>
            entity(as[UpdateInquest]) { updateInquest =>
              validateWith(UpdateInquestValidator)(updateInquest) {
                handle(inquestRepository.update(id, updateInquest)) {
