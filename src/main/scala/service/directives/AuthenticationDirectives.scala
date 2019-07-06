@@ -6,6 +6,8 @@ import com.google.firebase.auth.{FirebaseAuth, FirebaseAuthException, UserRecord
 
 import service.models.ApiError
 
+import scala.collection.JavaConverters._
+
 trait AuthenticationDirectives extends Directives {
 
   def authenticateUser: Directive1[UserRecord] = {
@@ -42,5 +44,17 @@ trait AuthenticationDirectives extends Directives {
     headerValue(extractBearerToken)
       .recover(handleUnauthorized)
       .flatMap(extractUserRecord)
+  }
+
+  def authenticateAdmin: Directive1[UserRecord] = {
+    authenticateUser.flatMap { userRecord =>
+      userRecord.getCustomClaims.asScala.get("admin") match {
+        case Some(_) =>
+          provide(userRecord)
+        case None =>
+          val apiError = ApiError.adminPrivilegeRequired
+          complete(apiError.statusCode, apiError.message)
+      }
+    }
   }
 }

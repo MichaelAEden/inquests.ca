@@ -10,6 +10,7 @@ object ApiError {
 
   val generic: ApiError = new ApiError(StatusCodes.InternalServerError, "Unknown error.")
   val unauthorized: ApiError = new ApiError(StatusCodes.Unauthorized, "Authentication was not provided.")
+  val adminPrivilegeRequired: ApiError = new ApiError(StatusCodes.Forbidden, "Admin privilege required to perform this action.")
   val authenticationFailure: ApiError = new ApiError(StatusCodes.InternalServerError, "Failed to authenticate user.")
 
   def invalidInquestTitle(title: String): ApiError =
