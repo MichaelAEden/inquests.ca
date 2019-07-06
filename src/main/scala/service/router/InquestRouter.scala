@@ -32,7 +32,11 @@ class InquestRouter(inquestRepository: InquestRepository)
           }
         }
       } ~ path(IntNumber) { id: Int =>
-       put {
+        get {
+          handleWithGeneric(inquestRepository.byId(id)) { inquest =>
+            complete(inquest)
+          }
+        } ~ put {
          authenticateUser { _ =>
            entity(as[UpdateInquest]) { updateInquest =>
              validateWith(UpdateInquestValidator)(updateInquest) {
