@@ -9,6 +9,7 @@ object ApiError {
   private def apply(statusCode: StatusCode, message: String): ApiError = new ApiError(statusCode, message)
 
   val generic: ApiError = new ApiError(StatusCodes.InternalServerError, "Unknown error.")
+  val authenticationFailure: ApiError = new ApiError(StatusCodes.InternalServerError, "Failed to authenticate user.")
 
   def invalidInquestTitle(title: String): ApiError =
     new ApiError(StatusCodes.BadRequest, s"Invalid inquest title: '$title'.")
