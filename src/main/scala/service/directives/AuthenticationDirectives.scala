@@ -11,7 +11,7 @@ trait AuthenticationDirectives extends Directives {
   def authenticateUser: Directive1[UserRecord] = {
 
     def extractBearerToken: HttpHeader => Option[String] = {
-      case HttpHeader("Authorization", token) if token.startsWith(s"Bearer ") =>
+      case HttpHeader("authorization", token) if token.startsWith(s"Bearer ") =>
         Some(token.stripPrefix(s"Bearer "))
       case _ =>
         None
