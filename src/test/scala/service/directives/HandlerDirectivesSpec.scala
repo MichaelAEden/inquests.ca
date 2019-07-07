@@ -1,7 +1,6 @@
 package service.directives
 
 import akka.http.scaladsl.model.StatusCodes
-import akka.http.scaladsl.server.Directives
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import org.scalatest.{Matchers, WordSpec}
 
@@ -9,7 +8,7 @@ import service.models.ApiError
 
 import scala.concurrent.Future
 
-class HandlerDirectivesSpec extends WordSpec with Matchers with ScalatestRouteTest with Directives with HandlerDirectives {
+class HandlerDirectivesSpec extends WordSpec with Matchers with ScalatestRouteTest with HandlerDirectives {
 
   import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
   import io.circe.generic.auto._
