@@ -12,7 +12,7 @@ trait AuthenticationDirectives extends Directives {
   import io.circe.generic.auto._
 
   // TODO: use async Firebase call.
-  def getUserFromToken(idToken: String): User = {
+  protected def getUserFromToken(idToken: String): User = {
     val decodedToken = FirebaseAuth.getInstance.verifyIdToken(idToken)
     val uid = decodedToken.getUid
     User(uid)
