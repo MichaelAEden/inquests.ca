@@ -2,20 +2,26 @@ package service.directives
 
 import akka.http.scaladsl.model.HttpHeader
 import akka.http.scaladsl.server.{Directive1, Directives, Rejection}
-import com.google.firebase.auth.{FirebaseAuth, FirebaseAuthException, UserRecord}
+import com.google.firebase.auth.{FirebaseAuth, FirebaseAuthException}
 
-import service.models.ApiError
-
-import scala.collection.JavaConverters._
+import service.models.{ApiError, User}
 
 trait AuthenticationDirectives extends Directives {
 
-  private def extractUserRecord(idToken: String): Directive1[UserRecord] = {
+  import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
+  import io.circe.generic.auto._
+
+  // TODO: use async Firebase call.
+  def getUserFromToken(idToken: String): User = {
+    val decodedToken = FirebaseAuth.getInstance.verifyIdToken(idToken)
+    val uid = decodedToken.getUid
+    User(uid)
+  }
+
+  private def extractUser(idToken: String): Directive1[User] = {
     try {
-      val decodedToken = FirebaseAuth.getInstance.verifyIdToken(idToken)
-      val uid = decodedToken.getUid
-      val userRecord = FirebaseAuth.getInstance.getUser(uid)
-      provide(userRecord)
+      val user = getUserFromToken(idToken)
+      provide(user)
     } catch {
       // TODO: log error.
       case _: FirebaseAuthException =>
@@ -32,28 +38,25 @@ trait AuthenticationDirectives extends Directives {
     complete(apiError.statusCode, apiError.message)
   }
 
-  def authenticateUser: Directive1[UserRecord] = {
-
-    def extractBearerToken: HttpHeader => Option[String] = {
-      case HttpHeader("authorization", token) if token.startsWith(s"Bearer ") =>
-        Some(token.stripPrefix(s"Bearer "))
-      case _ =>
-        None
-    }
-
-    headerValue(extractBearerToken)
-      .recover(handleUnauthorized)
-      .flatMap(extractUserRecord)
+  private def extractBearerToken: HttpHeader => Option[String] = {
+    case HttpHeader("authorization", token) if token.startsWith(s"Bearer ") =>
+      Some(token.stripPrefix(s"Bearer "))
+    case _ =>
+      None
   }
 
-  def authenticateAdmin: Directive1[UserRecord] = {
-    authenticateUser.flatMap { userRecord =>
-      userRecord.getCustomClaims.asScala.get("admin") match {
-        case Some(_) =>
-          provide(userRecord)
-        case None =>
-          val apiError = ApiError.adminPrivilegeRequired
-          complete(apiError.statusCode, apiError.message)
+  def authenticateUser: Directive1[User] = {
+    headerValue(extractBearerToken)
+      .recover(handleUnauthorized)
+      .flatMap(extractUser)
+  }
+
+  def authenticateAdmin: Directive1[User] = {
+    authenticateUser.flatMap { user =>
+      if (user.isAdmin) provide(user)
+      else {
+        val apiError = ApiError.adminPrivilegeRequired
+        complete(apiError.statusCode, apiError.message)
       }
     }
   }
