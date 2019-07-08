@@ -7,11 +7,15 @@ import db.spec.InquestRepository
 import service.directives._
 import service.models.ApiError
 
-class InquestRouter(inquestRepository: InquestRepository)
+import scala.concurrent.ExecutionContextExecutor
+
+class InquestRouter(inquestRepository: InquestRepository)(implicit ece: ExecutionContextExecutor)
   extends Router with AuthenticationDirectives with HandlerDirectives with ValidatorDirectives {
 
   import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
   import io.circe.generic.auto._
+
+  implicit val contextExecutor: ExecutionContextExecutor = ece
 
   override def route: Route = pathPrefix("api") {
     pathPrefix("inquests") {

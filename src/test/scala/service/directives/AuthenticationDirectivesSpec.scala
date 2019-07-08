@@ -2,17 +2,22 @@ package service.directives
 
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import org.scalatest.{Matchers, WordSpec}
 import akka.http.scaladsl.model.{headers => httpHeaders}
 import com.google.firebase.auth.FirebaseAuthException
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.{Matchers, WordSpec}
+
 import service.models.{ApiError, User}
+
+import scala.concurrent.{ExecutionContextExecutor, Future}
 
 class AuthenticationDirectivesSpec
   extends WordSpec with Matchers with ScalatestRouteTest with AuthenticationDirectives with MockFactory {
 
   import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
   import io.circe.generic.auto._
+
+  implicit val contextExecutor: ExecutionContextExecutor = system.dispatcher
 
   val testUserUid = "userUid"
   val testAdminUid = "adminUid"
@@ -33,21 +38,22 @@ class AuthenticationDirectivesSpec
   }
 
   // Mocking FirebaseAuth is difficult, so instead we will override this function for these tests.
-  override def getUserFromToken(idToken: String): User = {
+  override def getUserFromToken(idToken: String): Future[User] = {
     idToken match {
-      case "invalidToken" => throw new FirebaseAuthException("BOOM!", "BAM!")
+      case "invalidToken" =>
+        Future.failed(new FirebaseAuthException("BOOM!", "BAM!"))
       case "userToken" =>
         val mockUser = stub[MockableUser]
         (mockUser.isAdmin _)
           .when()
           .returns(false)
-        mockUser
+        Future.successful(mockUser)
       case "adminToken" =>
         val mockAdmin = stub[MockableAdmin]
         (mockAdmin.isAdmin _)
           .when()
           .returns(true)
-        mockAdmin
+        Future.successful(mockAdmin)
     }
   }
 

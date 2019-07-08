@@ -5,29 +5,36 @@ import akka.http.scaladsl.server.{Directive1, Directives, Rejection}
 import com.google.firebase.auth.{FirebaseAuth, FirebaseAuthException}
 
 import service.models.{ApiError, User}
+import utils.FutureConverters.ApiFutureConverter
+
+import scala.concurrent.{ExecutionContextExecutor, Future}
+import scala.util.{Failure, Success}
 
 trait AuthenticationDirectives extends Directives {
 
   import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
   import io.circe.generic.auto._
 
-  // TODO: use async Firebase call.
-  protected def getUserFromToken(idToken: String): User = {
-    val decodedToken = FirebaseAuth.getInstance.verifyIdToken(idToken)
-    val uid = decodedToken.getUid
-    User(uid)
+  implicit val contextExecutor: ExecutionContextExecutor
+
+  protected def getUserFromToken(idToken: String): Future[User] = {
+    FirebaseAuth
+      .getInstance
+      .verifyIdTokenAsync(idToken)
+      .asScala
+      .map(decodedToken => User(decodedToken.getUid))
   }
 
   private def extractUser(idToken: String): Directive1[User] = {
-    try {
-      val user = getUserFromToken(idToken)
-      provide(user)
-    } catch {
-      // TODO: log error.
-      case _: FirebaseAuthException =>
+    val eventualUser = getUserFromToken(idToken)
+
+    onComplete(eventualUser) flatMap {
+      case Success(user) =>
+        provide(user)
+      case Failure(_: FirebaseAuthException) =>
         val apiError = ApiError.authenticationFailure
         complete(apiError.statusCode, apiError.message)
-      case _: Throwable =>
+      case Failure(_: Throwable) =>
         val apiError = ApiError.generic
         complete(apiError.statusCode, apiError.message)
     }

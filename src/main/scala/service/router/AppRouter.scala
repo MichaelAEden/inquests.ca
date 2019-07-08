@@ -4,7 +4,10 @@ import akka.http.scaladsl.server.{Directives, Route}
 
 import db.spec.InquestRepository
 
-class AppRouter(inquestRepository: InquestRepository) extends Router with Directives {
+import scala.concurrent.ExecutionContextExecutor
+
+class AppRouter(inquestRepository: InquestRepository)(implicit ece: ExecutionContextExecutor)
+  extends Router with Directives {
 
   private val staticResourceRouter = StaticResourceRouter()
   private val inquestRouter = new InquestRouter(inquestRepository)
