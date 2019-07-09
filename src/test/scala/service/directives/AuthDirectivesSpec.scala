@@ -18,11 +18,10 @@ class AuthDirectivesSpec
 
   private implicit val ece: ExecutionContextExecutor = system.dispatcher
 
-  private val testUser = FirebaseUser("userUid")
-  private val testAdmin = FirebaseUser("adminUid")
-
-  private val testUserToken = "userToken"
-  private val testAdminToken = "adminToken"
+  private val testUser = FirebaseUser("uid")
+  private val testToken = "token"
+  private val testCredentials = OAuth2BearerToken(testToken)
+  private val testCredentialsWrongSchema = BasicHttpCredentials("p4$$w0rd")
 
   private def testRoute(implicit firebaseClient: FirebaseClient) = Route.seal {
     pathPrefix("secured") {
@@ -43,14 +42,13 @@ class AuthDirectivesSpec
     "provide an authenticateUser directive" which {
 
       "authenticates a user" in {
-        val credentials = OAuth2BearerToken(testUserToken)
         val mockFirebaseClient = mock[FirebaseClient]
 
         (mockFirebaseClient.getUserFromToken _)
-          .expects(testUserToken)
+          .expects(testToken)
           .returns(Future.successful(Some(testUser)))
 
-        Get("/secured/user") ~> addCredentials(credentials) ~> testRoute(mockFirebaseClient) ~> check {
+        Get("/secured/user") ~> addCredentials(testCredentials) ~> testRoute(mockFirebaseClient) ~> check {
           status shouldBe StatusCodes.OK
           val response = responseAs[FirebaseUser]
           response shouldBe testUser
@@ -58,14 +56,13 @@ class AuthDirectivesSpec
       }
 
       "returns 401 unauthorized if token was not successfully verified" in {
-        val credentials = OAuth2BearerToken(testUserToken)
         val mockFirebaseClient = mock[FirebaseClient]
 
         (mockFirebaseClient.getUserFromToken _)
-          .expects(testUserToken)
+          .expects(testToken)
           .returns(Future.successful(None))
 
-        Get("/secured/user") ~> addCredentials(credentials) ~> testRoute(mockFirebaseClient) ~> check {
+        Get("/secured/user") ~> addCredentials(testCredentials) ~> testRoute(mockFirebaseClient) ~> check {
           status shouldBe StatusCodes.Unauthorized
         }
       }
@@ -77,57 +74,54 @@ class AuthDirectivesSpec
       }
 
       "returns 401 unauthorized if authorization has wrong scheme" in {
-        val credentials = BasicHttpCredentials("p4$$w0rd")
-
-        Get("/secured/user") ~> addCredentials(credentials) ~> testRoute(mock[FirebaseClient]) ~> check {
+        Get("/secured/user") ~> addCredentials(testCredentialsWrongSchema) ~> testRoute(mock[FirebaseClient]) ~> check {
           status shouldBe StatusCodes.Unauthorized
         }
       }
 
     }
 
-    "provide an authenticateAdmin directive" which {
+    "provide an authorizeAdmin directive" which {
 
-      "authenticates an admin" in {
-        val credentials = OAuth2BearerToken(testAdminToken)
+      "authorizes an admin" in {
         val mockFirebaseClient = mock[FirebaseClient]
 
         (mockFirebaseClient.getUserFromToken _)
-          .expects(testAdminToken)
-          .returns(Future.successful(Some(testAdmin)))
+          .expects(testToken)
+          .returns(Future.successful(Some(testUser)))
 
         (mockFirebaseClient.isAdmin _)
-          .expects(testAdmin)
+          .expects(testUser)
           .returns(Future.successful(true))
 
-        Get("/secured/admin") ~> addCredentials(credentials) ~> testRoute(mockFirebaseClient) ~> check {
+        Get("/secured/admin") ~> addCredentials(testCredentials) ~> testRoute(mockFirebaseClient) ~> check {
           status shouldBe StatusCodes.OK
         }
       }
 
       "returns 403 forbidden if user is not admin" in {
-        val credentials = OAuth2BearerToken(testUserToken)
+        val credentials = OAuth2BearerToken(testToken)
         val mockFirebaseClient = mock[FirebaseClient]
 
         (mockFirebaseClient.getUserFromToken _)
-          .expects(testUserToken)
+          .expects(testToken)
           .returns(Future.successful(Some(testUser)))
 
         (mockFirebaseClient.isAdmin _)
           .expects(testUser)
           .returns(Future.successful(false))
 
-        Get("/secured/admin") ~> addCredentials(credentials) ~> testRoute(mockFirebaseClient) ~> check {
+        Get("/secured/admin") ~> addCredentials(testCredentials) ~> testRoute(mockFirebaseClient) ~> check {
           status shouldBe StatusCodes.Forbidden
         }
       }
 
       "returns 401 unauthorized if token was not successfully verified" in {
-        val credentials = OAuth2BearerToken(testAdminToken)
+        val credentials = OAuth2BearerToken(testToken)
         val mockFirebaseClient = mock[FirebaseClient]
 
         (mockFirebaseClient.getUserFromToken _)
-          .expects(testAdminToken)
+          .expects(testToken)
           .returns(Future.successful(None))
 
         Get("/secured/admin") ~> addCredentials(credentials) ~> testRoute(mockFirebaseClient) ~> check {
@@ -142,9 +136,7 @@ class AuthDirectivesSpec
       }
 
       "returns 401 unauthorized if authorization has wrong scheme" in {
-        val credentials = BasicHttpCredentials("p4$$w0rd")
-
-        Get("/secured/admin") ~> addCredentials(credentials) ~> testRoute(mock[FirebaseClient]) ~> check {
+        Get("/secured/admin") ~> addCredentials(testCredentialsWrongSchema) ~> testRoute(mock[FirebaseClient]) ~> check {
           status shouldBe StatusCodes.Unauthorized
         }
       }
