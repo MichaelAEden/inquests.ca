@@ -7,7 +7,7 @@ import clients.firebase.{FirebaseClient, FirebaseUser}
 
 import scala.concurrent.Future
 
-trait AuthenticationDirectives extends Directives {
+trait AuthDirectives extends Directives {
 
   private def authenticate(credentials: Credentials)(implicit firebaseClient: FirebaseClient): Future[Option[FirebaseUser]] = {
     credentials match {

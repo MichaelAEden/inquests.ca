@@ -9,7 +9,7 @@ import service.directives._
 import service.models.ApiError
 
 class InquestRouter(inquestRepository: InquestRepository)(implicit firebaseClient: FirebaseClient)
-  extends Router with AuthenticationDirectives with HandlerDirectives with ValidatorDirectives {
+  extends Router with AuthDirectives with HandlerDirectives with ValidatorDirectives {
 
   import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
   import io.circe.generic.auto._
