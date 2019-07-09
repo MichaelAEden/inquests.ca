@@ -2,16 +2,17 @@ package service.router
 
 import akka.http.scaladsl.server.{Directives, Route}
 
+import clients.firebase.FirebaseClient
 import db.spec.InquestRepository
 
-import scala.concurrent.ExecutionContextExecutor
-
-class AppRouter(inquestRepository: InquestRepository)(implicit ece: ExecutionContextExecutor)
+class AppRouter(inquestRepository: InquestRepository, firebaseClient: FirebaseClient)
   extends Router with Directives {
 
   private val staticResourceRouter = StaticResourceRouter()
-  private val inquestRouter = new InquestRouter(inquestRepository)
+  private val inquestRouter = new InquestRouter(inquestRepository)(firebaseClient)
 
-  override def route: Route = staticResourceRouter.route ~ inquestRouter.route
+  override def route: Route = Route.seal {
+    staticResourceRouter.route ~ inquestRouter.route
+  }
 
 }

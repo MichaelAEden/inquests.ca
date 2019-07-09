@@ -2,20 +2,17 @@ package service.router
 
 import akka.http.scaladsl.server.Route
 
+import clients.firebase.FirebaseClient
 import db.models.{CreateInquest, UpdateInquest}
 import db.spec.InquestRepository
 import service.directives._
 import service.models.ApiError
 
-import scala.concurrent.ExecutionContextExecutor
-
-class InquestRouter(inquestRepository: InquestRepository)(implicit ece: ExecutionContextExecutor)
+class InquestRouter(inquestRepository: InquestRepository)(implicit firebaseClient: FirebaseClient)
   extends Router with AuthenticationDirectives with HandlerDirectives with ValidatorDirectives {
 
   import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
   import io.circe.generic.auto._
-
-  implicit val contextExecutor: ExecutionContextExecutor = ece
 
   override def route: Route = pathPrefix("api") {
     pathPrefix("inquests") {
@@ -25,7 +22,7 @@ class InquestRouter(inquestRepository: InquestRepository)(implicit ece: Executio
             complete(inquests)
           }
         } ~ post {
-          authenticateAdmin { _ =>
+          authorizeAdmin("access to create inquest") apply { _ =>
             entity(as[CreateInquest]) { createInquest =>
               validateWith(CreateInquestValidator)(createInquest) {
                 handleWithGeneric(inquestRepository.create(createInquest)) { inquest =>
@@ -41,7 +38,7 @@ class InquestRouter(inquestRepository: InquestRepository)(implicit ece: Executio
             complete(inquest)
           }
         } ~ put {
-         authenticateAdmin { _ =>
+         authorizeAdmin("access to update inquest") apply { _ =>
            entity(as[UpdateInquest]) { updateInquest =>
              validateWith(UpdateInquestValidator)(updateInquest) {
                handle(inquestRepository.update(id, updateInquest)) {
