@@ -8,11 +8,13 @@ import db.spec.InquestRepository
 import service.directives._
 import service.models.ApiError
 
-class InquestRouter(inquestRepository: InquestRepository)(implicit firebaseClient: FirebaseClient)
+class InquestRouter(inquestRepository: InquestRepository, fbClient: FirebaseClient)
   extends Router with AuthDirectives with HandlerDirectives with ValidatorDirectives {
 
   import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
   import io.circe.generic.auto._
+
+  private implicit val firebaseClient: FirebaseClient = fbClient
 
   override def route: Route = pathPrefix("api") {
     pathPrefix("inquests") {
