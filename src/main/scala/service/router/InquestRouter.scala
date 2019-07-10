@@ -36,11 +36,7 @@ class InquestRouter(inquestRepository: InquestRepository, fbClient: FirebaseClie
           }
         }
       } ~ path(IntNumber) { id: Int =>
-        get {
-          handleWithGeneric(inquestRepository.byId(id)) { inquest =>
-            complete(inquest)
-          }
-        } ~ put {
+        put {
          authorizeAdmin("access to update inquest") apply { _ =>
            entity(as[UpdateInquest]) { updateInquest =>
              validateWith(UpdateInquestValidator)(updateInquest) {
