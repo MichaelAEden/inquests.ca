@@ -6,6 +6,7 @@ import akka.http.scaladsl.model.headers.{BasicHttpCredentials, OAuth2BearerToken
 import akka.http.scaladsl.server.{ExceptionHandler, Route}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{Matchers, WordSpec}
+
 import clients.firebase.{FirebaseClient, FirebaseUser}
 
 import scala.concurrent.{ExecutionContextExecutor, Future}

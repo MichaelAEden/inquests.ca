@@ -27,4 +27,5 @@ trait AuthDirectives extends Directives {
       authorizeAsync(_ => firebaseClient.isAdmin(user)).tmap(_ => user)
     }
   }
+
 }
