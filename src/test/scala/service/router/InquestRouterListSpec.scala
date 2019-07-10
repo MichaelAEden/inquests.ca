@@ -5,6 +5,7 @@ import akka.http.scaladsl.testkit.ScalatestRouteTest
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{Matchers, WordSpec}
 
+import clients.firebase.FirebaseClient
 import db.models.Inquest
 import db.spec.InquestRepository
 import service.models.ApiError
@@ -20,12 +21,13 @@ class InquestRouterListSpec extends WordSpec with Matchers with ScalatestRouteTe
   private val testInquest2 = Inquest(Some(2), "Superman vs Batman", "some inquest")
 
   private val testInquests = Seq(testInquest1, testInquest2)
+  private val mockFirebaseClient: FirebaseClient = mock[FirebaseClient]
 
   "InquestRouter" should {
 
     "return all inquests" in {
       val mockInquestRepository = mock[InquestRepository]
-      val router = new InquestRouter(mockInquestRepository)
+      val router = new InquestRouter(mockInquestRepository, mockFirebaseClient)
 
       (mockInquestRepository.all _)
         .expects()
@@ -40,7 +42,7 @@ class InquestRouterListSpec extends WordSpec with Matchers with ScalatestRouteTe
 
     "handle repository failure in inquests route" in {
       val mockInquestRepository = mock[InquestRepository]
-      val router = new InquestRouter(mockInquestRepository)
+      val router = new InquestRouter(mockInquestRepository, mockFirebaseClient)
 
       (mockInquestRepository.all _)
         .expects()
@@ -54,4 +56,5 @@ class InquestRouterListSpec extends WordSpec with Matchers with ScalatestRouteTe
     }
 
   }
+
 }
