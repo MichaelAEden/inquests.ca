@@ -40,7 +40,7 @@ class AuthDirectivesSpec
 
   "AuthDirectives" should {
 
-    "provide an authenticateUser directive" which {
+    "provide authenticateUser directive" which {
 
       "authenticates a user" in {
         val mockFirebaseClient = mock[FirebaseClient]
@@ -82,7 +82,7 @@ class AuthDirectivesSpec
 
     }
 
-    "provide an authorizeAdmin directive" which {
+    "provide authorizeAdmin directive" which {
 
       "authorizes an admin" in {
         val mockFirebaseClient = mock[FirebaseClient]
@@ -101,7 +101,6 @@ class AuthDirectivesSpec
       }
 
       "returns 403 forbidden if user is not admin" in {
-        val credentials = OAuth2BearerToken(testToken)
         val mockFirebaseClient = mock[FirebaseClient]
 
         (mockFirebaseClient.getUserFromToken _)
@@ -118,14 +117,13 @@ class AuthDirectivesSpec
       }
 
       "returns 401 unauthorized if token was not successfully verified" in {
-        val credentials = OAuth2BearerToken(testToken)
         val mockFirebaseClient = mock[FirebaseClient]
 
         (mockFirebaseClient.getUserFromToken _)
           .expects(testToken)
           .returns(Future.successful(None))
 
-        Get("/secured/admin") ~> addCredentials(credentials) ~> testRoute(mockFirebaseClient) ~> check {
+        Get("/secured/admin") ~> addCredentials(testCredentials) ~> testRoute(mockFirebaseClient) ~> check {
           status shouldBe StatusCodes.Unauthorized
         }
       }
