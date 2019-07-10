@@ -16,6 +16,7 @@ class InquestRouter(inquestRepository: InquestRepository, fbClient: FirebaseClie
 
   private implicit val firebaseClient: FirebaseClient = fbClient
 
+  // TODO: sanitize input.
   override def route: Route = pathPrefix("api") {
     pathPrefix("inquests") {
       pathEndOrSingleSlash {
