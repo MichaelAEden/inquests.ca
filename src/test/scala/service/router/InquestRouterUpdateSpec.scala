@@ -61,7 +61,7 @@ class InquestRouterUpdateSpec extends WordSpec with Matchers with ScalatestRoute
         .expects(testInquestId, testUpdateInquest)
         .returns(Future.successful(testInquest))
 
-      Put(s"/api/inquests/$testInquestId", testUpdateInquest) ~> addCredentials(testCredentials) ~> router.route ~> check {
+      Put(s"/api/inquests/$testInquestId", testUpdateInquest) ~> addCredentials(testCredentials) ~> router.sealedRoute ~> check {
         status shouldBe StatusCodes.OK
         val response = responseAs[Inquest]
         response shouldBe testInquest
@@ -77,7 +77,7 @@ class InquestRouterUpdateSpec extends WordSpec with Matchers with ScalatestRoute
         .expects(2, testUpdateInquest)
         .returns(Future.failed(InquestNotFound(2)))
 
-      Put("/api/inquests/2", testUpdateInquest) ~> addCredentials(testCredentials) ~> router.route ~> check {
+      Put("/api/inquests/2", testUpdateInquest) ~> addCredentials(testCredentials) ~> router.sealedRoute ~> check {
         val apiError = ApiError.inquestNotFound(2)
         status shouldBe apiError.statusCode
         val response = responseAs[String]
@@ -94,7 +94,7 @@ class InquestRouterUpdateSpec extends WordSpec with Matchers with ScalatestRoute
         .expects(*, *)
         .never
 
-      Put(s"/api/inquests/$testInquestId", testUpdateInquestInvalidTitle) ~> addCredentials(testCredentials) ~> router.route ~> check {
+      Put(s"/api/inquests/$testInquestId", testUpdateInquestInvalidTitle) ~> addCredentials(testCredentials) ~> router.sealedRoute ~> check {
         val apiError = ApiError.invalidInquestTitle(testUpdateInquestInvalidTitle.title.get)
         status shouldBe apiError.statusCode
         val response = responseAs[String]
@@ -111,7 +111,7 @@ class InquestRouterUpdateSpec extends WordSpec with Matchers with ScalatestRoute
         .expects(testInquestId, testUpdateInquest)
         .returns(Future.failed(new Exception("BOOM!")))
 
-      Put(s"/api/inquests/$testInquestId", testUpdateInquest) ~> addCredentials(testCredentials) ~> router.route ~> check {
+      Put(s"/api/inquests/$testInquestId", testUpdateInquest) ~> addCredentials(testCredentials) ~> router.sealedRoute ~> check {
         status shouldBe ApiError.generic.statusCode
         val response = responseAs[String]
         response shouldBe ApiError.generic.message
@@ -123,8 +123,8 @@ class InquestRouterUpdateSpec extends WordSpec with Matchers with ScalatestRoute
       val mockFirebaseClient = createMockFirebaseClient(testToken, Some(testUser), isAdmin = false)
       val router = new InquestRouter(mockInquestRepository, mockFirebaseClient)
 
-      Put(s"/api/inquests/$testInquestId", testUpdateInquest) ~> addCredentials(testCredentials) ~> router.route ~> check {
-        rejection shouldBe AuthorizationFailedRejection
+      Put(s"/api/inquests/$testInquestId", testUpdateInquest) ~> addCredentials(testCredentials) ~> router.sealedRoute ~> check {
+        status shouldBe StatusCodes.Forbidden
       }
     }
 
@@ -133,8 +133,8 @@ class InquestRouterUpdateSpec extends WordSpec with Matchers with ScalatestRoute
       val mockFirebaseClient = createMockFirebaseClient(testToken, maybeUser = None, isAdmin = false)
       val router = new InquestRouter(mockInquestRepository, mockFirebaseClient)
 
-      Put(s"/api/inquests/$testInquestId", testUpdateInquest) ~> addCredentials(testCredentials) ~> router.route ~> check {
-        rejection shouldBe a[AuthenticationFailedRejection]
+      Put(s"/api/inquests/$testInquestId", testUpdateInquest) ~> addCredentials(testCredentials) ~> router.sealedRoute ~> check {
+        status shouldBe StatusCodes.Unauthorized
       }
     }
 

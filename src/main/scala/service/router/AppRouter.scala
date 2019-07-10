@@ -11,6 +11,7 @@ class AppRouter(inquestRepository: InquestRepository, fbClient: FirebaseClient)
   private val staticResourceRouter = StaticResourceRouter()
   private val inquestRouter = new InquestRouter(inquestRepository, fbClient)
 
+  // TODO: implement custom exception, rejection handlers.
   override def route: Route = Route.seal {
     staticResourceRouter.route ~ inquestRouter.route
   }

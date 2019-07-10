@@ -60,7 +60,7 @@ class InquestRouterCreateSpec
         .expects(testCreateInquest)
         .returns(Future.successful(testInquest))
 
-      Post("/api/inquests", testCreateInquest) ~> addCredentials(testCredentials) ~> router.route ~> check {
+      Post("/api/inquests", testCreateInquest) ~> addCredentials(testCredentials) ~> router.sealedRoute ~> check {
         status shouldBe StatusCodes.OK
         val response = responseAs[Inquest]
         response shouldBe testInquest
@@ -76,7 +76,7 @@ class InquestRouterCreateSpec
         .expects(*)
         .never
 
-      Post("/api/inquests", testCreateInquestInvalidTitle) ~> addCredentials(testCredentials) ~> router.route ~> check {
+      Post("/api/inquests", testCreateInquestInvalidTitle) ~> addCredentials(testCredentials) ~> router.sealedRoute ~> check {
         val apiError = ApiError.invalidInquestTitle(testCreateInquestInvalidTitle.title)
         status shouldBe apiError.statusCode
         val response = responseAs[String]
@@ -93,7 +93,7 @@ class InquestRouterCreateSpec
         .expects(testCreateInquest)
         .returns(Future.failed(new Exception("BOOM!")))
 
-      Post("/api/inquests", testCreateInquest) ~> addCredentials(testCredentials) ~> router.route ~> check {
+      Post("/api/inquests", testCreateInquest) ~> addCredentials(testCredentials) ~> router.sealedRoute ~> check {
         status shouldBe ApiError.generic.statusCode
         val response = responseAs[String]
         response shouldBe ApiError.generic.message
@@ -105,8 +105,8 @@ class InquestRouterCreateSpec
       val mockFirebaseClient = createMockFirebaseClient(testToken, Some(testUser), isAdmin = false)
       val router = new InquestRouter(mockInquestRepository, mockFirebaseClient)
 
-      Post("/api/inquests", testCreateInquest) ~> addCredentials(testCredentials) ~> router.route ~> check {
-        rejection shouldBe AuthorizationFailedRejection
+      Post("/api/inquests", testCreateInquest) ~> addCredentials(testCredentials) ~> router.sealedRoute ~> check {
+        status shouldBe StatusCodes.Forbidden
       }
     }
 
@@ -115,8 +115,8 @@ class InquestRouterCreateSpec
       val mockFirebaseClient = createMockFirebaseClient(testToken, maybeUser = None, isAdmin = false)
       val router = new InquestRouter(mockInquestRepository, mockFirebaseClient)
 
-      Post("/api/inquests", testCreateInquest) ~> addCredentials(testCredentials) ~> router.route ~> check {
-        rejection shouldBe a[AuthenticationFailedRejection]
+      Post("/api/inquests", testCreateInquest) ~> addCredentials(testCredentials) ~> router.sealedRoute ~> check {
+        status shouldBe StatusCodes.Unauthorized
       }
     }
 

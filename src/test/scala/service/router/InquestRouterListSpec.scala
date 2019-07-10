@@ -33,7 +33,7 @@ class InquestRouterListSpec extends WordSpec with Matchers with ScalatestRouteTe
         .expects()
         .returns(Future.successful(testInquests))
 
-      Get("/api/inquests") ~> router.route ~> check {
+      Get("/api/inquests") ~> router.sealedRoute ~> check {
         status shouldBe StatusCodes.OK
         val response = responseAs[Seq[Inquest]]
         response shouldBe testInquests
@@ -48,7 +48,7 @@ class InquestRouterListSpec extends WordSpec with Matchers with ScalatestRouteTe
         .expects()
         .returns(Future.failed(new Exception("BOOM!")))
 
-      Get("/api/inquests") ~> router.route ~> check {
+      Get("/api/inquests") ~> router.sealedRoute ~> check {
         status shouldBe ApiError.generic.statusCode
         val response = responseAs[String]
         response shouldBe ApiError.generic.message
