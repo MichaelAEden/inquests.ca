@@ -8,6 +8,6 @@ target/
 .idea
 
 # Elastic Beanstalk files
-aws_eb/.elasticbeanstalk/*
-!aws_eb/.elasticbeanstalk/*.cfg.yml
-!aws_eb/.elasticbeanstalk/*.global.yml
+eb/.elasticbeanstalk/*
+!eb/.elasticbeanstalk/*.cfg.yml
+!eb/.elasticbeanstalk/*.global.yml
