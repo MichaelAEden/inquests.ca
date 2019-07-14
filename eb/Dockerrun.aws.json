@@ -8,5 +8,11 @@
     {
       "ContainerPort": 9000
     }
+  ],
+  "Volumes": [
+    {
+      "HostDirectory": "/etc/firebase",
+      "ContainerDirectory": "/etc/firebase"
+    }
   ]
 }
