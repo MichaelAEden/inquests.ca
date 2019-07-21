@@ -10,7 +10,7 @@ trait InquestTable { this: Db =>
 
   class Inquests(tag: Tag) extends Table[Inquest](tag, "inquest") {
 
-    def id: Rep[Int] = column[Int]("id", O.PrimaryKey, O.AutoInc)
+    def id: Rep[Int] = column[Int]("id", O.AutoInc, O.PrimaryKey)
     def title: Rep[String] = column[String]("title")
     def description: Rep[String] = column[String]("description")
 

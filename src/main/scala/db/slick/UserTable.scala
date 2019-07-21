@@ -11,7 +11,7 @@ trait UserTable { this: Db =>
 
   class Users(tag: Tag) extends Table[User](tag, "user") {
 
-    def id: Rep[Int] = column[Int]("id", O.PrimaryKey, O.AutoInc)
+    def id: Rep[Int] = column[Int]("id", O.AutoInc, O.PrimaryKey)
     def firebaseUid: Rep[String] = column[String]("firebase_uid", O.Unique)
     def email: Rep[String] = column[String]("email", O.Unique)
     def name: Rep[String] = column[String]("name")
