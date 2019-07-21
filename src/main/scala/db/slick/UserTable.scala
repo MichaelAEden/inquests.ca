@@ -13,8 +13,19 @@ trait UserTable { this: Db =>
 
     def id: Rep[Int] = column[Int]("id", O.PrimaryKey, O.AutoInc)
     def firebaseUid: Rep[String] = column[String]("firebase_uid", O.Unique)
+    def name: Rep[String] = column[String]("name")
+    def email: Rep[String] = column[String]("email", O.Unique)
+    def jurisdiction: Rep[String] = column[String]("jurisdiction")
+    def role: Rep[String] = column[String]("role")
 
-    def * : ProvenShape[User] = (id.?, firebaseUid) <> (User.tupled, User.unapply)
+    def * : ProvenShape[User] = (
+      id.?,
+      firebaseUid,
+      name,
+      email,
+      jurisdiction,
+      role
+    ) <> (User.tupled, User.unapply)
 
   }
 
