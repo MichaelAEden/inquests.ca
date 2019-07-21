@@ -32,6 +32,7 @@ class SlickInquestRepository(databaseConfig: DatabaseConfig[JdbcProfile])(implic
 
   import config.profile.api._
 
+  // TODO: compile queries.
   override def all(): Future[Seq[Inquest]] = db.run(inquests.result)
 
   override def byId(id: Int): Future[Option[Inquest]] = {
