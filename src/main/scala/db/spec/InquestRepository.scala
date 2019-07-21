@@ -26,7 +26,6 @@ object InquestRepository {
 class SlickInquestRepository(databaseConfig: DatabaseConfig[JdbcProfile])(implicit ec: ExecutionContext)
   extends InquestRepository with Db with InquestTable {
 
-  override val db = databaseConfig.db
   override val config = databaseConfig
 
   import config.profile.api._
