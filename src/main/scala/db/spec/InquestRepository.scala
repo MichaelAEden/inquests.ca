@@ -3,8 +3,9 @@ package db.spec
 import slick.basic.DatabaseConfig
 import slick.jdbc.JdbcProfile
 
-import db.models.{CreateInquest, Inquest, UpdateInquest}
+import db.models.Inquest
 import db.spec.InquestRepository.InquestNotFound
+import service.models.{CreateInquest, UpdateInquest}
 
 import scala.concurrent.{ExecutionContext, Future}
 

@@ -1,7 +1,6 @@
 package service.directives
 
-import db.models.{CreateInquest, UpdateInquest}
-import service.models.ApiError
+import service.models.{ApiError, CreateInquest, UpdateInquest}
 
 trait Validator[T] {
 

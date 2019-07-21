@@ -9,9 +9,9 @@ import org.scalamock.scalatest.MockFactory
 import org.scalatest.{Matchers, WordSpec}
 
 import clients.firebase.{FirebaseClient, FirebaseUser}
-import db.models.{CreateInquest, Inquest}
+import db.models.Inquest
 import db.spec.InquestRepository
-import service.models.ApiError
+import service.models.{ApiError, CreateInquest}
 
 import scala.concurrent.Future
 

@@ -1,4 +1,6 @@
-package db.models
+package service.models
+
+import db.models.Inquest
 
 case class UpdateInquest(title: Option[String], description: Option[String]) {
 
