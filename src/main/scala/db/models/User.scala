@@ -8,3 +8,13 @@ case class User(
   jurisdiction: String,
   role: String
 )
+
+object User {
+
+  type Role = String
+
+  val UserRole: Role = "user"
+  val EditorRole: Role = "editor"
+  val AdminRole: Role = "admin"
+
+}
