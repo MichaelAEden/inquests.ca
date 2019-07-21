@@ -35,7 +35,7 @@ object FirebaseClient {
 
 private class ScalaFirebaseClient(implicit ece: ExecutionContextExecutor) extends FirebaseClient {
 
-  def getUserFromToken(idToken: String): Future[Option[FirebaseUser]] = {
+  override def getUserFromToken(idToken: String): Future[Option[FirebaseUser]] = {
     FirebaseAuth
       .getInstance
       .verifyIdTokenAsync(idToken)
@@ -47,7 +47,7 @@ private class ScalaFirebaseClient(implicit ece: ExecutionContextExecutor) extend
       }
   }
 
-  def isAdmin(user: FirebaseUser): Future[Boolean] = {
+  override def isAdmin(user: FirebaseUser): Future[Boolean] = {
     getUserRecord(user)
       .map { userRecord =>
         userRecord
