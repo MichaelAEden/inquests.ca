@@ -5,7 +5,7 @@ import akka.http.scaladsl.server.Route
 import clients.firebase.FirebaseClient
 import db.spec.InquestRepository
 import service.directives._
-import service.models.{ApiError, CreateInquest, UpdateInquest}
+import service.models._
 
 class InquestRouter(inquestRepository: InquestRepository, fbClient: FirebaseClient)
   extends Router with AuthDirectives with HandlerDirectives with ValidatorDirectives {
