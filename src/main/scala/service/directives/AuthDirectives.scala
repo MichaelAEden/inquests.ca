@@ -18,12 +18,12 @@ trait AuthDirectives extends Directives {
     }
   }
 
-  def authenticateUser(realm: String)(implicit firebaseClient: FirebaseClient): Directive1[FirebaseUser] = {
+  def authenticateFirebaseUser(realm: String)(implicit firebaseClient: FirebaseClient): Directive1[FirebaseUser] = {
     authenticateOAuth2Async(realm, authenticate)
   }
 
   def authorizeAdmin(realm: String)(implicit firebaseClient: FirebaseClient): Directive1[FirebaseUser] = {
-    authenticateUser(realm) flatMap { user =>
+    authenticateFirebaseUser(realm) flatMap { user =>
       authorizeAsync(_ => firebaseClient.isAdmin(user)).tmap(_ => user)
     }
   }

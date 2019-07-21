@@ -27,7 +27,7 @@ class AuthDirectivesSpec
   private def testRoute(implicit firebaseClient: FirebaseClient) = Route.seal {
     pathPrefix("secured") {
       pathPrefix("user") {
-        authenticateUser("test server") apply { user =>
+        authenticateFirebaseUser("test server") apply { user =>
           complete(user)
         }
       } ~ pathPrefix("admin") {
@@ -40,7 +40,7 @@ class AuthDirectivesSpec
 
   "AuthDirectives" should {
 
-    "provide authenticateUser directive" which {
+    "provide authenticateFirebaseUser directive" which {
 
       "authenticates a user" in {
         val mockFirebaseClient = mock[FirebaseClient]
