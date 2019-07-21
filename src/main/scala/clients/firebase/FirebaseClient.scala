@@ -12,7 +12,7 @@ import scala.util.control.NonFatal
 
 trait FirebaseClient {
 
-  def getUserFromToken(idToken: String): Future[Option[FirebaseUser]]
+  def getFirebaseUserFromToken(idToken: String): Future[Option[FirebaseUser]]
   def isAdmin(user: FirebaseUser): Future[Boolean]
 
 }
@@ -35,7 +35,7 @@ object FirebaseClient {
 
 private class ScalaFirebaseClient(implicit ece: ExecutionContextExecutor) extends FirebaseClient {
 
-  def getUserFromToken(idToken: String): Future[Option[FirebaseUser]] = {
+  def getFirebaseUserFromToken(idToken: String): Future[Option[FirebaseUser]] = {
     FirebaseAuth
       .getInstance
       .verifyIdTokenAsync(idToken)

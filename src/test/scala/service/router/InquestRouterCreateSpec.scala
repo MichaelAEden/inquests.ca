@@ -34,7 +34,7 @@ class InquestRouterCreateSpec
   ): FirebaseClient = {
     val mockFirebaseClient = mock[FirebaseClient]
 
-    (mockFirebaseClient.getUserFromToken _)
+    (mockFirebaseClient.getFirebaseUserFromToken _)
       .expects(token)
       .returns(Future.successful(maybeUser))
 

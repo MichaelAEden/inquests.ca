@@ -45,7 +45,7 @@ class AuthDirectivesSpec
       "authenticates a user" in {
         val mockFirebaseClient = mock[FirebaseClient]
 
-        (mockFirebaseClient.getUserFromToken _)
+        (mockFirebaseClient.getFirebaseUserFromToken _)
           .expects(testToken)
           .returns(Future.successful(Some(testUser)))
 
@@ -59,7 +59,7 @@ class AuthDirectivesSpec
       "returns 401 unauthorized if token was not successfully verified" in {
         val mockFirebaseClient = mock[FirebaseClient]
 
-        (mockFirebaseClient.getUserFromToken _)
+        (mockFirebaseClient.getFirebaseUserFromToken _)
           .expects(testToken)
           .returns(Future.successful(None))
 
@@ -87,7 +87,7 @@ class AuthDirectivesSpec
       "authorizes an admin" in {
         val mockFirebaseClient = mock[FirebaseClient]
 
-        (mockFirebaseClient.getUserFromToken _)
+        (mockFirebaseClient.getFirebaseUserFromToken _)
           .expects(testToken)
           .returns(Future.successful(Some(testUser)))
 
@@ -103,7 +103,7 @@ class AuthDirectivesSpec
       "returns 403 forbidden if user is not admin" in {
         val mockFirebaseClient = mock[FirebaseClient]
 
-        (mockFirebaseClient.getUserFromToken _)
+        (mockFirebaseClient.getFirebaseUserFromToken _)
           .expects(testToken)
           .returns(Future.successful(Some(testUser)))
 
@@ -119,7 +119,7 @@ class AuthDirectivesSpec
       "returns 401 unauthorized if token was not successfully verified" in {
         val mockFirebaseClient = mock[FirebaseClient]
 
-        (mockFirebaseClient.getUserFromToken _)
+        (mockFirebaseClient.getFirebaseUserFromToken _)
           .expects(testToken)
           .returns(Future.successful(None))
 

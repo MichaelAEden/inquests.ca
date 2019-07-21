@@ -12,7 +12,7 @@ trait AuthDirectives extends Directives {
   private def authenticate(credentials: Credentials)(implicit firebaseClient: FirebaseClient): Future[Option[FirebaseUser]] = {
     credentials match {
       case Credentials.Provided(idToken) =>
-        firebaseClient.getUserFromToken(idToken)
+        firebaseClient.getFirebaseUserFromToken(idToken)
       case _ =>
         Future.successful(None)
     }

@@ -35,7 +35,7 @@ class InquestRouterUpdateSpec extends WordSpec with Matchers with ScalatestRoute
   ): FirebaseClient = {
     val mockFirebaseClient = mock[FirebaseClient]
 
-    (mockFirebaseClient.getUserFromToken _)
+    (mockFirebaseClient.getFirebaseUserFromToken _)
       .expects(token)
       .returns(Future.successful(maybeUser))
 
