@@ -23,7 +23,7 @@ class InquestRouterCreateSpec
   private val testCreateInquestInvalidTitle = testCreateInquest.copy(title = "")
   private val testInquest = Inquest(Some(1), testCreateInquest.title, testCreateInquest.description)
 
-  private val testUser = FirebaseUser("uid")
+  private val testUser = FirebaseUser("uid", "email")
   private val testToken = "token"
   private val testCredentials = OAuth2BearerToken(testToken)
 

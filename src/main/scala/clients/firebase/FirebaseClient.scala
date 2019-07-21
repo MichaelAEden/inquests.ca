@@ -40,7 +40,7 @@ private class ScalaFirebaseClient(implicit ece: ExecutionContextExecutor) extend
       .getInstance
       .verifyIdTokenAsync(idToken)
       .asScala
-      .map(decodedToken => Some(FirebaseUser(decodedToken.getUid)))
+      .map(decodedToken => Some(FirebaseUser(decodedToken.getUid, decodedToken.getEmail)))
       .recover {
         // TODO: log exception.
         case NonFatal(_) => None

@@ -24,7 +24,7 @@ class InquestRouterUpdateSpec extends WordSpec with Matchers with ScalatestRoute
   private val testUpdateInquest = UpdateInquest(Some("Queen vs CBC"), Some("some inquest"))
   private val testUpdateInquestInvalidTitle = UpdateInquest(Some(""), Some("some inquest"))
 
-  private val testUser = FirebaseUser("uid")
+  private val testUser = FirebaseUser("uid", "email")
   private val testToken = "token"
   private val testCredentials = OAuth2BearerToken(testToken)
 

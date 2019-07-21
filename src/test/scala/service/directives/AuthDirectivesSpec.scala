@@ -19,7 +19,7 @@ class AuthDirectivesSpec
 
   private implicit val ece: ExecutionContextExecutor = system.dispatcher
 
-  private val testUser = FirebaseUser("uid")
+  private val testUser = FirebaseUser("uid", "email")
   private val testToken = "token"
   private val testCredentials = OAuth2BearerToken(testToken)
   private val testCredentialsWrongSchema = BasicHttpCredentials("p4$$w0rd")
