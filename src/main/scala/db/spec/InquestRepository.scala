@@ -4,6 +4,7 @@ import slick.basic.DatabaseConfig
 import slick.jdbc.JdbcProfile
 
 import db.models.Inquest
+import db.slick.InquestTable
 import db.spec.InquestRepository.InquestNotFound
 import service.models.{CreateInquest, UpdateInquest}
 
@@ -40,7 +41,7 @@ class SlickInquestRepository(databaseConfig: DatabaseConfig[JdbcProfile])(implic
   }
 
   override def create(createInquest: CreateInquest): Future[Inquest] = {
-    val inquest = createInquest.toInquest()
+    val inquest = createInquest.toInquest
     val q = (
       inquests returning inquests.map(_.id) into ((_, id) => inquest.copy(id = Some(id)))
     ) += inquest
