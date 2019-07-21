@@ -4,7 +4,6 @@ import db.models.Inquest
 import db.spec.Db
 import slick.lifted.ProvenShape
 
-// An Inquest table with 3 columns: id, title, description
 trait InquestTable { this: Db =>
 
   import config.profile.api._
