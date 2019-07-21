@@ -9,7 +9,9 @@ object ApiError {
   private def apply(statusCode: StatusCode, message: String): ApiError = new ApiError(statusCode, message)
 
   val generic: ApiError = new ApiError(StatusCodes.InternalServerError, "Unknown error.")
+  val emptyUserName: ApiError = new ApiError(StatusCodes.BadRequest, s"User name cannot be empty.")
 
+  // TODO: change to emptyInquestTitle error.
   def invalidInquestTitle(title: String): ApiError =
     new ApiError(StatusCodes.BadRequest, s"Invalid inquest title: '$title'.")
 
