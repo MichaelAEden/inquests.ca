@@ -6,8 +6,8 @@ import utils.Utils
 
 trait Db {
 
-  val db: JdbcProfile#Backend#Database
   val config: DatabaseConfig[JdbcProfile]
+  val db: JdbcProfile#Backend#Database = config.db
 
 }
 
