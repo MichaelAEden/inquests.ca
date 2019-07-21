@@ -1,11 +1,8 @@
-package db.spec
-
-import slick.lifted.ProvenShape
-import slick.dbio.DBIOAction
+package db.slick
 
 import db.models.Inquest
-
-import scala.concurrent.Future
+import db.spec.Db
+import slick.lifted.ProvenShape
 
 // An Inquest table with 3 columns: id, title, description
 trait InquestTable { this: Db =>
@@ -23,15 +20,5 @@ trait InquestTable { this: Db =>
   }
 
   val inquests = TableQuery[Inquests]
-
-  // TODO: create Table trait with these methods, or move them somewhere more appropriate.
-  // Note these functions would only be used for integration tests.
-  def init(initialInquests: Seq[Inquest] = Seq.empty): Future[Unit] = {
-    db.run(DBIOAction.seq(
-      inquests.schema.create,
-      inquests ++= initialInquests
-    ))
-  }
-  def drop(): Future[Unit] = db.run(DBIOAction.seq(inquests.schema.drop))
 
 }
