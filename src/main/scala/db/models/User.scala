@@ -6,15 +6,9 @@ case class User(
   email: String,
   name: String,
   jurisdiction: String,
-  role: String
-)
+  role: Role
+) {
 
-object User {
-
-  type Role = String
-
-  val UserRole: Role = "user"
-  val EditorRole: Role = "editor"
-  val AdminRole: Role = "admin"
+  def canPerformAction(action: Action): Boolean = role.actions.contains(action)
 
 }

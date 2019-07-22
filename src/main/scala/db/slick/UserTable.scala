@@ -1,7 +1,7 @@
 package db.slick
 
 import db.spec.Db
-import db.models.User
+import db.models.{User, Role}
 
 import slick.lifted.ProvenShape
 
@@ -11,12 +11,17 @@ trait UserTable { this: Db =>
 
   class Users(tag: Tag) extends Table[User](tag, "user") {
 
+    implicit val roleColumnType: BaseColumnType[Role] = MappedColumnType.base[Role, String](
+      { role: Role => role.title },
+      { title => Role.getRole(title) }
+    )
+
     def id: Rep[Int] = column[Int]("id", O.AutoInc, O.PrimaryKey)
     def firebaseUid: Rep[String] = column[String]("firebase_uid", O.Unique)
     def email: Rep[String] = column[String]("email", O.Unique)
     def name: Rep[String] = column[String]("name")
     def jurisdiction: Rep[String] = column[String]("jurisdiction")
-    def role: Rep[String] = column[String]("role")
+    def role: Rep[Role] = column[Role]("role")
 
     def * : ProvenShape[User] = (
       id.?,
