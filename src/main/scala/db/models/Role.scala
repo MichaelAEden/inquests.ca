@@ -6,19 +6,19 @@ case class Role(title: String, actions: Seq[Action])
 
 object Role {
 
-  val RoleUser: Role = Role("user", Seq.empty)
+  val User: Role = Role("user", Seq.empty)
 
-  val RoleEditor: Role = Role("editor", Seq(
+  val Editor: Role = Role("editor", Seq(
     EditAuthority
   ))
 
-  val RoleAdmin: Role = Role("admin", Seq(
+  val Admin: Role = Role("admin", Seq(
     EditAuthority,
     ManageUsers
   ))
 
   def getRole(title: String): Role = {
-    Seq(RoleUser, RoleEditor, RoleAdmin)
+    Seq(User, Editor, Admin)
       .find(_.title == title)
       .getOrElse(throw new Exception(s"No such role: $title."))
   }
