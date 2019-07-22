@@ -9,7 +9,7 @@ case class User(
   name: String,
   jurisdictionId: String,
   role: Role,
-  created: Timestamp
+  created: Option[Timestamp]
 ) {
 
   def canPerformAction(action: Action): Boolean = role.actions.contains(action)

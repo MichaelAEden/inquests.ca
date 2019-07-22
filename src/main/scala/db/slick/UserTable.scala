@@ -33,7 +33,7 @@ trait UserTable { this: Db =>
       name,
       jurisdictionId,
       role,
-      created
+      created.?
     ) <> (User.tupled, User.unapply)
 
   }
