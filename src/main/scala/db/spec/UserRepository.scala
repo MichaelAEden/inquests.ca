@@ -13,6 +13,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 trait UserRepository {
 
+  def byFirebaseUid(uid: String): Future[User]
   def byEmail(email: String): Future[User]
   def create(createUser: CreateUser, firebaseUser: FirebaseUser): Future[User]
 
@@ -20,7 +21,7 @@ trait UserRepository {
 
 object UserRepository {
 
-  final case class UserNotFound(email: String) extends Exception(s"User with email $email not found.")
+  final case class UserNotFound() extends Exception(s"User not found.")
 
 }
 
@@ -32,9 +33,14 @@ class SlickUserRepository(databaseConfig: DatabaseConfig[JdbcProfile])(implicit 
   import config.profile.api._
 
   // TODO: compile queries.
+  override def byFirebaseUid(uid: String): Future[User] = {
+    val q = users.filter(_.firebaseUid === uid).take(1)
+    db.run(q.result).map(_.headOption.getOrElse(throw UserNotFound()))
+  }
+
   override def byEmail(email: String): Future[User] = {
     val q = users.filter(_.email === email).take(1)
-    db.run(q.result).map(_.headOption.getOrElse(throw UserNotFound(email)))
+    db.run(q.result).map(_.headOption.getOrElse(throw UserNotFound()))
   }
 
   override def create(createUser: CreateUser, firebaseUser: FirebaseUser): Future[User] = {
