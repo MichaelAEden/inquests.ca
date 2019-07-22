@@ -8,14 +8,14 @@ object ApiError {
 
   private def apply(statusCode: StatusCode, message: String): ApiError = new ApiError(statusCode, message)
 
-  val generic: ApiError = new ApiError(StatusCodes.InternalServerError, "Unknown error.")
+  // 400
+  val userNotFound: ApiError = new ApiError(StatusCodes.NotFound, s"User not found.")
+  val inquestNotFound: ApiError = new ApiError(StatusCodes.NotFound, s"Inquest not found.")
+
   val emptyUserName: ApiError = new ApiError(StatusCodes.BadRequest, s"User name cannot be empty.")
+  val emptyInquestTitle: ApiError = new ApiError(StatusCodes.BadRequest, s"Inquest title cannot be empty.")
 
-  // TODO: change to emptyInquestTitle error.
-  def invalidInquestTitle(title: String): ApiError =
-    new ApiError(StatusCodes.BadRequest, s"Invalid inquest title: '$title'.")
-
-  def inquestNotFound(id: Int): ApiError =
-    new ApiError(StatusCodes.NotFound, s"Inquest with id: '$id' not found.")
+  // 500
+  val generic: ApiError = new ApiError(StatusCodes.InternalServerError, "Unknown error.")
 
 }

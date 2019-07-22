@@ -17,7 +17,7 @@ object UpdateInquestValidator extends Validator[UpdateInquest] {
 
   def validate(updateInquest: UpdateInquest): Option[ApiError] = {
     if (updateInquest.title.exists(_.isEmpty))
-      Some(ApiError.invalidInquestTitle(""))
+      Some(ApiError.emptyInquestTitle)
     else
       None
   }
