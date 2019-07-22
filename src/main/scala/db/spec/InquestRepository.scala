@@ -13,7 +13,7 @@ import scala.concurrent.{ExecutionContext, Future}
 trait InquestRepository {
 
   def all(): Future[Seq[Inquest]]
-  def byId(id: Int): Future[Option[Inquest]]
+  def byId(id: Int): Future[Inquest]
   def create(createInquest: CreateInquest): Future[Inquest]
   def update(id: Int, updateInquest: UpdateInquest): Future[Inquest]
 
@@ -35,9 +35,9 @@ class SlickInquestRepository(databaseConfig: DatabaseConfig[JdbcProfile])(implic
   // TODO: compile queries.
   override def all(): Future[Seq[Inquest]] = db.run(inquests.result)
 
-  override def byId(id: Int): Future[Option[Inquest]] = {
+  override def byId(id: Int): Future[Inquest] = {
     val q = inquests.filter(_.id === id).take(1)
-    db.run(q.result).map(_.headOption)
+    db.run(q.result).map(_.headOption.getOrElse(throw InquestNotFound(id)))
   }
 
   override def create(createInquest: CreateInquest): Future[Inquest] = {
@@ -51,8 +51,7 @@ class SlickInquestRepository(databaseConfig: DatabaseConfig[JdbcProfile])(implic
   override def update(id: Int, updateInquest: UpdateInquest): Future[Inquest] = {
     // TODO: reduce two db queries to one.
     for {
-      result <- byId(id)
-      inquest = result.getOrElse(throw InquestNotFound(id))
+      inquest <- byId(id)
       newInquest = updateInquest.toInquest(inquest)
 
       q = inquests
