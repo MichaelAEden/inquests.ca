@@ -11,12 +11,12 @@ trait JurisdictionTable { this: Db =>
 
   class Jurisdictions(tag: Tag) extends Table[Jurisdiction](tag, "jurisdiction") {
 
-    def abbreviation: Rep[String] = column[String]("abbreviation", O.PrimaryKey)
+    def id: Rep[String] = column[String]("jurisdiction_id", O.PrimaryKey)
     def name: Rep[String] = column[String]("name", O.Unique)
     def isFederal: Rep[Boolean] = column[Boolean]("is_federal")
 
     def * : ProvenShape[Jurisdiction] = (
-      abbreviation,
+      id,
       name,
       isFederal,
     ) <> (Jurisdiction.tupled, Jurisdiction.unapply)

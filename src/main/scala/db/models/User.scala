@@ -5,7 +5,7 @@ case class User(
   firebaseUid: String,
   email: String,
   name: String,
-  jurisdiction: String,
+  jurisdictionId: String,
   role: Role
 ) {
 

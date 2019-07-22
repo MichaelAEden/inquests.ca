@@ -16,11 +16,11 @@ trait UserTable { this: Db =>
       { title => Role.getRole(title) }
     )
 
-    def id: Rep[Int] = column[Int]("id", O.AutoInc, O.PrimaryKey)
+    def id: Rep[Int] = column[Int]("user_id", O.AutoInc, O.PrimaryKey)
     def firebaseUid: Rep[String] = column[String]("firebase_uid", O.Unique)
     def email: Rep[String] = column[String]("email", O.Unique)
     def name: Rep[String] = column[String]("name")
-    def jurisdiction: Rep[String] = column[String]("jurisdiction")
+    def jurisdictionId: Rep[String] = column[String]("jurisdiction_id")
     def role: Rep[Role] = column[Role]("role")
 
     def * : ProvenShape[User] = (
@@ -28,7 +28,7 @@ trait UserTable { this: Db =>
       firebaseUid,
       email,
       name,
-      jurisdiction,
+      jurisdictionId,
       role
     ) <> (User.tupled, User.unapply)
 
