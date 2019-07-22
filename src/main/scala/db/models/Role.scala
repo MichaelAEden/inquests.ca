@@ -9,12 +9,12 @@ object Role {
   val RoleUser: Role = Role("user", Seq.empty)
 
   val RoleEditor: Role = Role("editor", Seq(
-    ActionEditAuthority
+    EditAuthority
   ))
 
   val RoleAdmin: Role = Role("admin", Seq(
-    ActionEditAuthority,
-    ActionManageUsers
+    EditAuthority,
+    ManageUsers
   ))
 
   def getRole(title: String): Role = {
@@ -25,11 +25,11 @@ object Role {
 
 }
 
-case class Action(action: String)
+case class Action(action: String, realm: String)
 
 object Action {
 
-  val ActionEditAuthority = Action("editAuthority")
-  val ActionManageUsers = Action("manageUsers")
+  val EditAuthority = Action("editAuthority", "access to edit authorities")
+  val ManageUsers = Action("manageUsers", "access to manage users")
 
 }

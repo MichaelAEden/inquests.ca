@@ -7,13 +7,13 @@ import db.spec.UserRepository
 import service.directives._
 import service.models.{CreateUser, CreateUserValidator}
 
-class UserRouter(userRepository: UserRepository, fbClient: FirebaseClient)
+class UserRouter(userRepository: UserRepository, firebaseClient: FirebaseClient)
   extends Router with AuthDirectives with HandlerDirectives with ValidatorDirectives {
 
   import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
   import io.circe.generic.auto._
 
-  private implicit val firebaseClient: FirebaseClient = fbClient
+  private implicit val fbClient: FirebaseClient = firebaseClient
 
   override def route: Route = pathPrefix("api") {
     // TODO: should user be singular or plural according to REST convention?

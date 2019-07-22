@@ -8,13 +8,13 @@ import db.spec.{InquestRepository, UserRepository}
 class AppRouter(
   inquestRepository: InquestRepository,
   userRepository: UserRepository,
-  fbClient: FirebaseClient
+  firebaseClient: FirebaseClient
 )
   extends Router with Directives {
 
   private val staticResourceRouter = StaticResourceRouter()
-  private val inquestRouter = new InquestRouter(inquestRepository, fbClient)
-  private val userRouter = new UserRouter(userRepository, fbClient)
+  private val inquestRouter = new InquestRouter(inquestRepository, userRepository, firebaseClient)
+  private val userRouter = new UserRouter(userRepository, firebaseClient)
 
   // TODO: implement custom exception, rejection handlers.
   override def route: Route = Route.seal {
