@@ -1,8 +1,9 @@
 package db.slick
 
+import slick.lifted.ProvenShape
+
 import db.models.Inquest
 import db.spec.Db
-import slick.lifted.ProvenShape
 
 trait InquestTable { this: Db =>
 
