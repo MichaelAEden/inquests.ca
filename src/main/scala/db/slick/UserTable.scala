@@ -1,9 +1,11 @@
 package db.slick
 
+import slick.lifted.ProvenShape
+
 import db.spec.Db
 import db.models.{User, Role}
 
-import slick.lifted.ProvenShape
+import java.sql.Timestamp
 
 trait UserTable { this: Db =>
 
@@ -22,6 +24,7 @@ trait UserTable { this: Db =>
     def name: Rep[String] = column[String]("name")
     def jurisdictionId: Rep[String] = column[String]("jurisdiction_id")
     def role: Rep[Role] = column[Role]("role")
+    def created: Rep[Timestamp] = column[Timestamp]("created")
 
     def * : ProvenShape[User] = (
       id.?,
@@ -29,7 +32,8 @@ trait UserTable { this: Db =>
       email,
       name,
       jurisdictionId,
-      role
+      role,
+      created
     ) <> (User.tupled, User.unapply)
 
   }
