@@ -1,7 +1,7 @@
 package service.models
 
 import clients.firebase.FirebaseUser
-import db.models.User
+import db.models.{User, Role}
 import service.directives.Validator
 
 case class CreateUser(
@@ -16,7 +16,8 @@ case class CreateUser(
       firebaseUser.email,
       name,
       jurisdiction,
-      User.UserRole
+      Role.User,
+      None
     )
 
 }
