@@ -7,15 +7,17 @@ import clients.firebase.FirebaseUser
 import db.models.User
 import db.slick.UserTable
 import db.spec.UserRepository.UserNotFound
-import service.models.CreateUser
+import service.models.{CreateUser, UpdateUser}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 trait UserRepository {
 
+  def byId(id: Int): Future[User]
   def byFirebaseUid(uid: String): Future[User]
   def byEmail(email: String): Future[User]
   def create(createUser: CreateUser, firebaseUser: FirebaseUser): Future[User]
+  def update(id: Int, updateUser: UpdateUser): Future[User]
 
 }
 
@@ -33,6 +35,11 @@ class SlickUserRepository(databaseConfig: DatabaseConfig[JdbcProfile])(implicit 
   import config.profile.api._
 
   // TODO: compile queries.
+  override def byId(id: Int): Future[User] = {
+    val q = users.filter(_.id === id).take(1)
+    db.run(q.result).map(_.headOption.getOrElse(throw UserNotFound()))
+  }
+
   override def byFirebaseUid(uid: String): Future[User] = {
     val q = users.filter(_.firebaseUid === uid).take(1)
     db.run(q.result).map(_.headOption.getOrElse(throw UserNotFound()))
@@ -49,6 +56,20 @@ class SlickUserRepository(databaseConfig: DatabaseConfig[JdbcProfile])(implicit 
       users returning users.map(_.id) into ((_, id) => user.copy(id = Some(id)))
       ) += user
     db.run(q)
+  }
+
+  override def update(id: Int, updateUser: UpdateUser): Future[User] = {
+    for {
+      user <- byId(id)
+      newUser = updateUser.toUser(user)
+
+      q = users
+        .filter(_.id === id)
+        .map(user => (user.name, user.jurisdictionId, user.role))
+        .update((newUser.name, newUser.jurisdictionId, newUser.role))
+
+      _ <- db.run(q)
+    } yield newUser
   }
 
 }
