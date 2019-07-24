@@ -2,9 +2,6 @@ package service.models
 
 import db.models.User
 
-// TODO: use consistent naming for models in this package.
-// TODO: (cont) e.g., InquestCreateRequest, UserUpdateRequest, UserResponse.
-
 // The circe library cannot marshal the java.sql.Timestamp type.
 // TODO: determine way to marshal java.sql.Timestamp type so it can be included
 // TODO: (cont) in this model.

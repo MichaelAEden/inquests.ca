@@ -6,7 +6,7 @@ import slick.jdbc.JdbcProfile
 import db.models.Inquest
 import db.slick.InquestTable
 import db.spec.InquestRepository.InquestNotFound
-import service.models.{CreateInquest, UpdateInquest}
+import service.models.{InquestCreateRequest, InquestUpdateRequest}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -14,8 +14,8 @@ trait InquestRepository {
 
   def all(): Future[Seq[Inquest]]
   def byId(id: Int): Future[Inquest]
-  def create(createInquest: CreateInquest): Future[Inquest]
-  def update(id: Int, updateInquest: UpdateInquest): Future[Inquest]
+  def create(createInquest: InquestCreateRequest): Future[Inquest]
+  def update(id: Int, updateInquest: InquestUpdateRequest): Future[Inquest]
 
 }
 
@@ -40,7 +40,7 @@ class SlickInquestRepository(databaseConfig: DatabaseConfig[JdbcProfile])(implic
     db.run(q.result).map(_.headOption.getOrElse(throw InquestNotFound(id)))
   }
 
-  override def create(createInquest: CreateInquest): Future[Inquest] = {
+  override def create(createInquest: InquestCreateRequest): Future[Inquest] = {
     val inquest = createInquest.toInquest
     val q = (
       inquests returning inquests.map(_.id) into ((_, id) => inquest.copy(id = Some(id)))
@@ -48,7 +48,7 @@ class SlickInquestRepository(databaseConfig: DatabaseConfig[JdbcProfile])(implic
     db.run(q)
   }
 
-  override def update(id: Int, updateInquest: UpdateInquest): Future[Inquest] = {
+  override def update(id: Int, updateInquest: InquestUpdateRequest): Future[Inquest] = {
     // TODO: reduce two db queries to one.
     for {
       inquest <- byId(id)

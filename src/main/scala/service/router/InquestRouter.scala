@@ -29,8 +29,8 @@ class InquestRouter(
           }
         } ~ post {
           authorizeAction(Action.EditAuthority) apply { _ =>
-            entity(as[CreateInquest]) { createInquest =>
-              validateWith(CreateInquestValidator)(createInquest) {
+            entity(as[InquestCreateRequest]) { createInquest =>
+              validateWith(InquestCreateRequestValidator)(createInquest) {
                 handleWithGeneric(inquestRepository.create(createInquest)) { inquest =>
                   complete(inquest)
                 }
@@ -41,8 +41,8 @@ class InquestRouter(
       } ~ path(IntNumber) { id: Int =>
         put {
          authorizeAction(Action.EditAuthority) apply { _ =>
-           entity(as[UpdateInquest]) { updateInquest =>
-             validateWith(UpdateInquestValidator)(updateInquest) {
+           entity(as[InquestUpdateRequest]) { updateInquest =>
+             validateWith(InquestUpdateRequestValidator)(updateInquest) {
                handle(inquestRepository.update(id, updateInquest)) {
                  case InquestRepository.InquestNotFound(_) =>
                    ApiError.inquestNotFound

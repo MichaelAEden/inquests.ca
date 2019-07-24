@@ -5,7 +5,7 @@ import service.directives.Validator
 
 // Currently only used by admins.
 // Note updates to email should be done through Firebase.
-case class UpdateUser(
+case class UserUpdateRequest(
   name: Option[String],
   jurisdictionId: Option[String],
   role: Option[String]
@@ -20,9 +20,9 @@ case class UpdateUser(
 
 }
 
-object UpdateUserValidator extends Validator[UpdateUser] {
+object UserUpdateRequestValidator extends Validator[UserUpdateRequest] {
 
-  def validate(updateUser: UpdateUser): Option[ApiError] = {
+  def validate(updateUser: UserUpdateRequest): Option[ApiError] = {
     if (updateUser.name.exists(_.isEmpty))
       Some(ApiError.emptyUserName)
     else if (updateUser.role.exists(role => !Role.isRoleValid(role)))

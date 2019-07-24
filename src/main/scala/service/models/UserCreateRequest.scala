@@ -4,7 +4,7 @@ import clients.firebase.FirebaseUser
 import db.models.{User, Role}
 import service.directives.Validator
 
-case class CreateUser(
+case class UserCreateRequest(
   name: String,
   jurisdiction: String
 ) {
@@ -22,9 +22,9 @@ case class CreateUser(
 
 }
 
-object CreateUserValidator extends Validator[CreateUser] {
+object UserCreateRequestValidator extends Validator[UserCreateRequest] {
 
-  def validate(createUser: CreateUser): Option[ApiError] = {
+  def validate(createUser: UserCreateRequest): Option[ApiError] = {
     // Note the jurisdiction will be validated upon insertion by DB constraints.
     if (createUser.name.isEmpty)
       Some(ApiError.emptyUserName)

@@ -22,8 +22,8 @@ class UserRouter(userRepository: UserRepository, firebaseClient: FirebaseClient)
       pathEndOrSingleSlash {
         post {
           authenticateFirebaseUser("access to create user") apply { firebaseUser =>
-            entity(as[CreateUser]) { createUser =>
-              validateWith(CreateUserValidator)(createUser) {
+            entity(as[UserCreateRequest]) { createUser =>
+              validateWith(UserCreateRequestValidator)(createUser) {
                 handleWithGeneric(userRepository.create(createUser, firebaseUser)) { user =>
                   val userResponse = UserResponse.fromUser(user)
                   complete(userResponse)
@@ -49,8 +49,8 @@ class UserRouter(userRepository: UserRepository, firebaseClient: FirebaseClient)
       } ~ path(IntNumber) { id: Int =>
         put {
           authorizeAction(Action.ManageUsers) apply { _ =>
-            entity(as[UpdateUser]) { updateUser =>
-              validateWith(UpdateUserValidator)(updateUser) {
+            entity(as[UserUpdateRequest]) { updateUser =>
+              validateWith(UserUpdateRequestValidator)(updateUser) {
                 handle(userRepository.update(id, updateUser)) {
                   case UserRepository.UserNotFound() =>
                     ApiError.userNotFound

@@ -3,7 +3,7 @@ package service.models
 import db.models.Inquest
 import service.directives.Validator
 
-case class UpdateInquest(title: Option[String], description: Option[String]) {
+case class InquestUpdateRequest(title: Option[String], description: Option[String]) {
 
   def toInquest(inquest: Inquest): Inquest =
     inquest.copy(
@@ -13,9 +13,9 @@ case class UpdateInquest(title: Option[String], description: Option[String]) {
 
 }
 
-object UpdateInquestValidator extends Validator[UpdateInquest] {
+object InquestUpdateRequestValidator extends Validator[InquestUpdateRequest] {
 
-  def validate(updateInquest: UpdateInquest): Option[ApiError] = {
+  def validate(updateInquest: InquestUpdateRequest): Option[ApiError] = {
     if (updateInquest.title.exists(_.isEmpty))
       Some(ApiError.emptyInquestTitle)
     else
