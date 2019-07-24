@@ -1,9 +1,9 @@
 package db.slick
 
+import slick.lifted.ProvenShape
+
 import db.spec.Db
 import db.models.Jurisdiction
-
-import slick.lifted.ProvenShape
 
 trait JurisdictionTable { this: Db =>
 
