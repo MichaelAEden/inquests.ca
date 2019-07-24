@@ -3,7 +3,7 @@ package db.slick
 import slick.lifted.ProvenShape
 
 import db.spec.Db
-import db.models.{User, Role}
+import db.models.User
 
 import java.sql.Timestamp
 
@@ -13,17 +13,12 @@ trait UserTable { this: Db =>
 
   class Users(tag: Tag) extends Table[User](tag, "user") {
 
-    implicit val roleColumnType: BaseColumnType[Role] = MappedColumnType.base[Role, String](
-      { role: Role => role.title },
-      { title => Role.getRole(title) }
-    )
-
     def id: Rep[Int] = column[Int]("user_id", O.AutoInc, O.PrimaryKey)
     def firebaseUid: Rep[String] = column[String]("firebase_uid", O.Unique)
     def email: Rep[String] = column[String]("email", O.Unique)
     def name: Rep[String] = column[String]("name")
     def jurisdictionId: Rep[String] = column[String]("jurisdiction_id")
-    def role: Rep[Role] = column[Role]("role")
+    def role: Rep[String] = column[String]("role")
     def created: Rep[Timestamp] = column[Timestamp]("created")
 
     def * : ProvenShape[User] = (

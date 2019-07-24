@@ -2,27 +2,29 @@ package db.models
 
 import db.models.Action._
 
-case class Role(title: String, actions: Seq[Action])
+case class Role(name: String, actions: Seq[Action])
 
 object Role {
 
-  val User: Role = Role("user", Seq.empty)
+  val User: String = "user"
+  val Editor: String = "editor"
+  val Admin: String = "admin"
 
-  val Editor: Role = Role("editor", Seq(
-    EditAuthority
-  ))
+  private val roles = Seq[Role](
+    Role(User, Seq.empty),
+    Role(Editor, Seq(EditAuthority)),
+    Role(Admin, Seq(EditAuthority, ManageUsers))
+  )
 
-  val Admin: Role = Role("admin", Seq(
-    EditAuthority,
-    ManageUsers
-  ))
+  def isRoleValid(role: String): Boolean =
+    roles.exists(_.name == role)
 
-  def getRole(title: String): Role = {
-    Seq(User, Editor, Admin)
-      .find(_.title == title)
-      .getOrElse(throw new Exception(s"No such role: $title."))
-  }
-
+  def canRolePerformAction(role: String, action: Action): Boolean =
+    roles
+      .find(_.name == role)
+      .getOrElse(throw new Exception(s"No such role $role."))
+      .actions
+      .contains(action)
 }
 
 case class Action(action: String, realm: String)

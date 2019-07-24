@@ -26,7 +26,7 @@ object UserResponse {
       user.email,
       user.name,
       user.jurisdictionId,
-      user.role.title
+      user.role
     )
   }
 

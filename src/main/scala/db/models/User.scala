@@ -10,10 +10,11 @@ case class User(
   email: String,
   name: String,
   jurisdictionId: String,
-  role: Role,
+  role: String,
   created: Option[Timestamp]
 ) {
 
-  def canPerformAction(action: Action): Boolean = role.actions.contains(action)
+  def canPerformAction(action: Action): Boolean =
+    Role.canRolePerformAction(role, action)
 
 }
