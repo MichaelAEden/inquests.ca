@@ -5,7 +5,7 @@ import akka.http.scaladsl.server.Route
 import clients.firebase.FirebaseClient
 import db.spec.UserRepository
 import service.directives._
-import service.models.{CreateUser, CreateUserValidator}
+import service.models._
 
 class UserRouter(userRepository: UserRepository, firebaseClient: FirebaseClient)
   extends Router with AuthDirectives with HandlerDirectives with ValidatorDirectives {
@@ -16,7 +16,6 @@ class UserRouter(userRepository: UserRepository, firebaseClient: FirebaseClient)
   private implicit val fbClient: FirebaseClient = firebaseClient
 
   override def route: Route = pathPrefix("api") {
-    // TODO: should user be singular or plural according to REST convention?
     pathPrefix("users") {
       pathEndOrSingleSlash {
         post {
@@ -24,7 +23,8 @@ class UserRouter(userRepository: UserRepository, firebaseClient: FirebaseClient)
             entity(as[CreateUser]) { createUser =>
               validateWith(CreateUserValidator)(createUser) {
                 handleWithGeneric(userRepository.create(createUser, firebaseUser)) { user =>
-                  complete(user)
+                  val userResponse = UserResponse.fromUser(user)
+                  complete(userResponse)
                 }
               }
             }
