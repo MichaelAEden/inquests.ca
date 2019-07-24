@@ -13,12 +13,10 @@ trait JurisdictionTable { this: Db =>
 
     def id: Rep[String] = column[String]("jurisdiction_id", O.PrimaryKey)
     def name: Rep[String] = column[String]("name", O.Unique)
-    def isFederal: Rep[Boolean] = column[Boolean]("is_federal")
 
     def * : ProvenShape[Jurisdiction] = (
       id,
       name,
-      isFederal,
     ) <> (Jurisdiction.tupled, Jurisdiction.unapply)
 
   }
