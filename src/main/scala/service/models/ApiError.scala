@@ -12,6 +12,7 @@ object ApiError {
   val userNotFound: ApiError = new ApiError(StatusCodes.NotFound, s"User not found.")
   val inquestNotFound: ApiError = new ApiError(StatusCodes.NotFound, s"Inquest not found.")
 
+  val invalidUserRole: ApiError = new ApiError(StatusCodes.BadRequest, s"Invalid user role.")
   val emptyUserName: ApiError = new ApiError(StatusCodes.BadRequest, s"User name cannot be empty.")
   val emptyInquestTitle: ApiError = new ApiError(StatusCodes.BadRequest, s"Inquest title cannot be empty.")
 
