@@ -3,7 +3,7 @@ package service.router
 import akka.http.scaladsl.server.Route
 
 import clients.firebase.FirebaseClient
-import db.models.{User, Action}
+import db.models.Action
 import db.spec.{InquestRepository, UserRepository}
 import service.directives._
 import service.models._
@@ -45,7 +45,7 @@ class InquestRouter(
              validateWith(UpdateInquestValidator)(updateInquest) {
                handle(inquestRepository.update(id, updateInquest)) {
                  case InquestRepository.InquestNotFound(_) =>
-                   ApiError.inquestNotFound(id)
+                   ApiError.inquestNotFound
                  case _ =>
                    ApiError.generic
                } { inquest =>
