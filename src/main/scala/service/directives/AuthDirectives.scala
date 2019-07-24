@@ -27,19 +27,26 @@ trait AuthDirectives extends Directives {
     authenticateOAuth2Async(realm, authenticate)
   }
 
-  def authorizeAction(action: Action)
-                     (implicit firebaseClient: FirebaseClient, userRepository: UserRepository): Directive1[User] = {
+  def authenticateUser(realm: String)
+                      (implicit firebaseClient: FirebaseClient, userRepository: UserRepository): Directive1[User] = {
     // TODO: log errors.
     // TODO: log case where Firebase email differs from User email.
-    authenticateFirebaseUser(action.realm) flatMap { firebaseUser =>
+    authenticateFirebaseUser(realm) flatMap { firebaseUser =>
       val eventualUser = userRepository.byFirebaseUid(firebaseUser.uid)
       onComplete(eventualUser) flatMap {
         case Success(user) =>
-          authorize(_ => user.canPerformAction(action)) tmap { _ => user }
+          provide(user)
         case Failure(_) =>
           val apiError = ApiError.generic
           complete(apiError.statusCode, apiError.message)
       }
+    }
+  }
+
+  def authorizeAction(action: Action)
+                     (implicit firebaseClient: FirebaseClient, userRepository: UserRepository): Directive1[User] = {
+    authenticateUser(action.realm) flatMap { user =>
+      authorize(_ => user.canPerformAction(action)) tmap { _ => user }
     }
   }
 
