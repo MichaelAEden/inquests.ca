@@ -167,6 +167,26 @@ class AuthDirectivesSpec
         })
       }
 
+      "returns 500 internal server error if an unknown error was thrown by the repository" in {
+        val mockFirebaseClient = mock[FirebaseClient]
+        val mockUserRepository = mock[UserRepository]
+
+        (mockFirebaseClient.getFirebaseUserFromToken _)
+          .expects(testToken)
+          .returns(Future.successful(Some(testFirebaseUser)))
+
+        (mockUserRepository.byFirebaseUid _)
+          .expects(testFirebaseUid)
+          .returns(Future.failed(new Exception("BOOM!")))
+
+        (Get("/test/userAuthentication")
+          ~> addCredentials(testCredentials)
+          ~> testRoute(mockFirebaseClient, mockUserRepository)
+          ~> check {
+          status shouldBe StatusCodes.InternalServerError
+        })
+      }
+
     }
 
     "provide authorizeAction directive" which {
@@ -280,6 +300,26 @@ class AuthDirectivesSpec
           ~> testRoute(mock[FirebaseClient], mock[UserRepository])
           ~> check {
           status shouldBe StatusCodes.Unauthorized
+        })
+      }
+
+      "returns 500 internal server error if an unknown error was thrown by the repository" in {
+        val mockFirebaseClient = mock[FirebaseClient]
+        val mockUserRepository = mock[UserRepository]
+
+        (mockFirebaseClient.getFirebaseUserFromToken _)
+          .expects(testToken)
+          .returns(Future.successful(Some(testFirebaseUser)))
+
+        (mockUserRepository.byFirebaseUid _)
+          .expects(testFirebaseUid)
+          .returns(Future.failed(new Exception("BOOM!")))
+
+        (Get("/test/userAuthorization/editAuthority")
+          ~> addCredentials(testCredentials)
+          ~> testRoute(mockFirebaseClient, mockUserRepository)
+          ~> check {
+          status shouldBe StatusCodes.InternalServerError
         })
       }
 
