@@ -10,7 +10,17 @@ import scala.concurrent.Future
 
 trait AuthMocks extends MockFactory {
 
-  def mockAuthentication(token: String, maybeUser: Option[User]): (FirebaseClient, UserRepository) = {
+  def mockFirebaseUserAuthentication(token: String, maybeFirebaseUser: Option[FirebaseUser]): FirebaseClient = {
+    val mockFirebaseClient = mock[FirebaseClient]
+
+    (mockFirebaseClient.getFirebaseUserFromToken _)
+      .expects(token)
+      .returns(Future.successful(maybeFirebaseUser))
+
+    mockFirebaseClient
+  }
+
+  def mockUserAuthentication(token: String, maybeUser: Option[User]): (FirebaseClient, UserRepository) = {
     val mockFirebaseClient = mock[FirebaseClient]
     val mockUserRepository = mock[UserRepository]
 

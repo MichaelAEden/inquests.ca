@@ -70,9 +70,10 @@ class InquestRouterSpec
           .returns(Future.failed(new Exception("BOOM!")))
 
         Get("/api/inquests") ~> router.sealedRoute ~> check {
-          status shouldBe ApiError.generic.statusCode
+          val apiError = ApiError.generic
+          status shouldBe apiError.statusCode
           val response = responseAs[String]
-          response shouldBe ApiError.generic.message
+          response shouldBe apiError.message
         }
       }
 
@@ -82,7 +83,7 @@ class InquestRouterSpec
 
       "creates inquest with valid data" in {
         val mockInquestRepository = mock[InquestRepository]
-        val (mockFirebaseClient, mockUserRepository) = mockAuthentication(testToken, Some(testEditor))
+        val (mockFirebaseClient, mockUserRepository) = mockUserAuthentication(testToken, Some(testEditor))
         val router = new InquestRouter(mockInquestRepository, mockUserRepository, mockFirebaseClient)
 
         (mockInquestRepository.create _)
@@ -101,7 +102,7 @@ class InquestRouterSpec
 
       "does not create inquest with invalid data" in {
         val mockInquestRepository = mock[InquestRepository]
-        val (mockFirebaseClient, mockUserRepository) = mockAuthentication(testToken, Some(testEditor))
+        val (mockFirebaseClient, mockUserRepository) = mockUserAuthentication(testToken, Some(testEditor))
         val router = new InquestRouter(mockInquestRepository, mockUserRepository, mockFirebaseClient)
 
         (Post("/api/inquests", testInquestCreateRequestInvalidTitle)
@@ -117,7 +118,7 @@ class InquestRouterSpec
 
       "handles repository failure" in {
         val mockInquestRepository = mock[InquestRepository]
-        val (mockFirebaseClient, mockUserRepository) = mockAuthentication(testToken, Some(testEditor))
+        val (mockFirebaseClient, mockUserRepository) = mockUserAuthentication(testToken, Some(testEditor))
         val router = new InquestRouter(mockInquestRepository, mockUserRepository, mockFirebaseClient)
 
         (mockInquestRepository.create _)
@@ -128,15 +129,16 @@ class InquestRouterSpec
           ~> addCredentials(testCredentials)
           ~> router.sealedRoute
           ~> check {
-          status shouldBe ApiError.generic.statusCode
+          val apiError = ApiError.generic
+          status shouldBe apiError.statusCode
           val response = responseAs[String]
-          response shouldBe ApiError.generic.message
+          response shouldBe apiError.message
         })
       }
 
       "handles failure to authorize" in {
         val mockInquestRepository = mock[InquestRepository]
-        val (mockFirebaseClient, mockUserRepository) = mockAuthentication(testToken, Some(testUser))
+        val (mockFirebaseClient, mockUserRepository) = mockUserAuthentication(testToken, Some(testUser))
         val router = new InquestRouter(mockInquestRepository, mockUserRepository, mockFirebaseClient)
 
         (Post("/api/inquests", testInquestCreateRequest)
@@ -149,7 +151,7 @@ class InquestRouterSpec
 
       "handles failure to authenticate" in {
         val mockInquestRepository = mock[InquestRepository]
-        val (mockFirebaseClient, mockUserRepository) = mockAuthentication(testToken, None)
+        val (mockFirebaseClient, mockUserRepository) = mockUserAuthentication(testToken, None)
         val router = new InquestRouter(mockInquestRepository, mockUserRepository, mockFirebaseClient)
 
         (Post("/api/inquests", testInquestCreateRequest)
@@ -166,7 +168,7 @@ class InquestRouterSpec
 
       "updates an inquest with valid data" in {
         val mockInquestRepository = mock[InquestRepository]
-        val (mockFirebaseClient, mockUserRepository) = mockAuthentication(testToken, Some(testEditor))
+        val (mockFirebaseClient, mockUserRepository) = mockUserAuthentication(testToken, Some(testEditor))
         val router = new InquestRouter(mockInquestRepository, mockUserRepository, mockFirebaseClient)
 
         (mockInquestRepository.update _)
@@ -185,14 +187,14 @@ class InquestRouterSpec
 
       "returns not found if inquest does not exist" in {
         val mockInquestRepository = mock[InquestRepository]
-        val (mockFirebaseClient, mockUserRepository) = mockAuthentication(testToken, Some(testEditor))
+        val (mockFirebaseClient, mockUserRepository) = mockUserAuthentication(testToken, Some(testEditor))
         val router = new InquestRouter(mockInquestRepository, mockUserRepository, mockFirebaseClient)
 
         (mockInquestRepository.update _)
-          .expects(2, testInquestUpdateRequest)
-          .returns(Future.failed(InquestNotFound(2)))
+          .expects(1, testInquestUpdateRequest)
+          .returns(Future.failed(InquestNotFound(1)))
 
-        (Put("/api/inquests/2", testInquestUpdateRequest)
+        (Put("/api/inquests/1", testInquestUpdateRequest)
           ~> addCredentials(testCredentials)
           ~> router.sealedRoute
           ~> check {
@@ -205,7 +207,7 @@ class InquestRouterSpec
 
       "does not update an inquest with invalid data" in {
         val mockInquestRepository = mock[InquestRepository]
-        val (mockFirebaseClient, mockUserRepository) = mockAuthentication(testToken, Some(testEditor))
+        val (mockFirebaseClient, mockUserRepository) = mockUserAuthentication(testToken, Some(testEditor))
         val router = new InquestRouter(mockInquestRepository, mockUserRepository, mockFirebaseClient)
 
         (Put(s"/api/inquests/1", testInquestUpdateRequestInvalidTitle)
@@ -221,7 +223,7 @@ class InquestRouterSpec
 
       "handles repository failure" in {
         val mockInquestRepository = mock[InquestRepository]
-        val (mockFirebaseClient, mockUserRepository) = mockAuthentication(testToken, Some(testEditor))
+        val (mockFirebaseClient, mockUserRepository) = mockUserAuthentication(testToken, Some(testEditor))
         val router = new InquestRouter(mockInquestRepository, mockUserRepository, mockFirebaseClient)
 
         (mockInquestRepository.update _)
@@ -232,15 +234,16 @@ class InquestRouterSpec
           ~> addCredentials(testCredentials)
           ~> router.sealedRoute
           ~> check {
-          status shouldBe ApiError.generic.statusCode
+          val apiError = ApiError.generic
+          status shouldBe apiError.statusCode
           val response = responseAs[String]
-          response shouldBe ApiError.generic.message
+          response shouldBe apiError.message
         })
       }
 
       "handles failure to authorize" in {
         val mockInquestRepository = mock[InquestRepository]
-        val (mockFirebaseClient, mockUserRepository) = mockAuthentication(testToken, Some(testUser))
+        val (mockFirebaseClient, mockUserRepository) = mockUserAuthentication(testToken, Some(testUser))
         val router = new InquestRouter(mockInquestRepository, mockUserRepository, mockFirebaseClient)
 
         (Put(s"/api/inquests/1", testInquestUpdateRequest)
@@ -253,7 +256,7 @@ class InquestRouterSpec
 
       "handles failure to authenticate" in {
         val mockInquestRepository = mock[InquestRepository]
-        val (mockFirebaseClient, mockUserRepository) = mockAuthentication(testToken, None)
+        val (mockFirebaseClient, mockUserRepository) = mockUserAuthentication(testToken, None)
         val router = new InquestRouter(mockInquestRepository, mockUserRepository, mockFirebaseClient)
 
         (Put(s"/api/inquests/1", testInquestUpdateRequest)
