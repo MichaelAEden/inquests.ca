@@ -24,9 +24,9 @@ object UserUpdateRequestValidator extends Validator[UserUpdateRequest] {
 
   def validate(updateUser: UserUpdateRequest): Option[ApiError] = {
     if (updateUser.name.exists(_.isEmpty))
-      Some(ApiError.emptyUserName)
+      Some(ApiError.userEmptyName)
     else if (updateUser.role.exists(role => !Role.isRoleValid(role)))
-      Some(ApiError.invalidUserRole)
+      Some(ApiError.userInvalidRole)
     else
       None
   }

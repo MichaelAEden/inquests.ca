@@ -142,7 +142,7 @@ class UserRouterSpec
           ~> addCredentials(testCredentials)
           ~> router.sealedRoute
           ~> check {
-          val apiError = ApiError.emptyUserName
+          val apiError = ApiError.userEmptyName
           status shouldBe apiError.statusCode
           val response = responseAs[String]
           response shouldBe apiError.message
@@ -211,7 +211,7 @@ class UserRouterSpec
           ~> addCredentials(testCredentials)
           ~> router.sealedRoute
           ~> check {
-          val apiError = ApiError.emptyUserName
+          val apiError = ApiError.userEmptyName
           status shouldBe apiError.statusCode
           val response = responseAs[String]
           response shouldBe apiError.message

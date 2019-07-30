@@ -27,7 +27,7 @@ object UserCreateRequestValidator extends Validator[UserCreateRequest] {
   def validate(createUser: UserCreateRequest): Option[ApiError] = {
     // Note the jurisdiction will be validated upon insertion by DB constraints.
     if (createUser.name.isEmpty)
-      Some(ApiError.emptyUserName)
+      Some(ApiError.userEmptyName)
     else
       None
   }

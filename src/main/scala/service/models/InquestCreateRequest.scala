@@ -14,7 +14,7 @@ object InquestCreateRequestValidator extends Validator[InquestCreateRequest] {
 
   def validate(createInquest: InquestCreateRequest): Option[ApiError] = {
     if (createInquest.title.isEmpty)
-      Some(ApiError.emptyInquestTitle)
+      Some(ApiError.inquestEmptyTitle)
     else
       None
   }

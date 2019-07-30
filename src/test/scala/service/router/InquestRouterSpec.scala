@@ -109,7 +109,7 @@ class InquestRouterSpec
           ~> addCredentials(testCredentials)
           ~> router.sealedRoute
           ~> check {
-          val apiError = ApiError.emptyInquestTitle
+          val apiError = ApiError.inquestEmptyTitle
           status shouldBe apiError.statusCode
           val response = responseAs[String]
           response shouldBe apiError.message
@@ -214,7 +214,7 @@ class InquestRouterSpec
           ~> addCredentials(testCredentials)
           ~> router.sealedRoute
           ~> check {
-          val apiError = ApiError.emptyInquestTitle
+          val apiError = ApiError.inquestEmptyTitle
           status shouldBe apiError.statusCode
           val response = responseAs[String]
           response shouldBe apiError.message
