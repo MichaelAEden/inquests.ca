@@ -8,7 +8,7 @@
 
 - [ ] Are resources protected with authentication and authorization as needed?
 - [ ] Are error messages free of sensitive information?
-- [ ] Is <b>ALL</b> input sanitized?
+- [ ] Is input sanitized as needed?
 
 ### Error Handling
 
