@@ -76,6 +76,8 @@ class AuthDirectivesSpec
           ~> testRoute(mockFirebaseClient, mock[UserRepository])
           ~> check {
           status shouldBe StatusCodes.OK
+          val response = responseAs[FirebaseUser]
+          response shouldBe testFirebaseUser
         })
       }
 
@@ -132,6 +134,8 @@ class AuthDirectivesSpec
           ~> testRoute(mockFirebaseClient, mockUserRepository)
           ~> check {
           status shouldBe StatusCodes.OK
+          val response = responseAs[UserResponse]
+          response shouldBe UserResponse.fromUser(testUser)
         })
       }
 
@@ -208,6 +212,8 @@ class AuthDirectivesSpec
           ~> testRoute(mockFirebaseClient, mockUserRepository)
           ~> check {
           status shouldBe StatusCodes.OK
+          val response = responseAs[UserResponse]
+          response shouldBe UserResponse.fromUser(testAdmin)
         })
       }
 
@@ -228,6 +234,8 @@ class AuthDirectivesSpec
           ~> testRoute(mockFirebaseClient, mockUserRepository)
           ~> check {
           status shouldBe StatusCodes.OK
+          val response = responseAs[UserResponse]
+          response shouldBe UserResponse.fromUser(testEditor)
         })
       }
 
