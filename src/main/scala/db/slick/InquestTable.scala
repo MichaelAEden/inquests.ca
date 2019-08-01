@@ -1,9 +1,10 @@
-package db.spec
+package db.slick
 
-import slick.lifted.ProvenShape
 import slick.dbio.DBIOAction
+import slick.lifted.ProvenShape
 
 import db.models.Inquest
+import db.spec.Db
 
 import scala.concurrent.Future
 

@@ -4,6 +4,7 @@ import slick.basic.DatabaseConfig
 import slick.jdbc.JdbcProfile
 
 import db.models.Inquest
+import db.slick.InquestTable
 import db.spec.InquestRepository.InquestNotFound
 import service.models.{InquestCreateRequest, InquestUpdateRequest}
 
