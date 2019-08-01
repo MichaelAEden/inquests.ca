@@ -1,3 +1,3 @@
 package clients.firebase
 
-case class FirebaseUser(uid: String)
+case class FirebaseUser(uid: String, email: String)
