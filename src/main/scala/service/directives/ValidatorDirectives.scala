@@ -2,6 +2,8 @@ package service.directives
 
 import akka.http.scaladsl.server.{Directive0, Directives}
 
+import service.models.Validator
+
 trait ValidatorDirectives extends Directives {
 
   import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._

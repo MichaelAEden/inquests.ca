@@ -9,9 +9,9 @@ import org.scalamock.scalatest.MockFactory
 import org.scalatest.{Matchers, WordSpec}
 
 import clients.firebase.{FirebaseClient, FirebaseUser}
-import db.models.{CreateInquest, Inquest}
+import db.models.Inquest
 import db.spec.InquestRepository
-import service.models.ApiError
+import service.models.{ApiError, InquestCreateRequest}
 
 import scala.concurrent.Future
 
@@ -21,7 +21,7 @@ class InquestRouterCreateSpec
   import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
   import io.circe.generic.auto._
 
-  private val testCreateInquest = CreateInquest("Mega Shark vs Crocasaurus", "some inquest")
+  private val testCreateInquest = InquestCreateRequest("Mega Shark vs Crocasaurus", "some inquest")
   private val testCreateInquestInvalidTitle = testCreateInquest.copy(title = "")
   private val testInquest = Inquest(Some(1), testCreateInquest.title, testCreateInquest.description)
 

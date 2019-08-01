@@ -9,10 +9,10 @@ import org.scalamock.scalatest.MockFactory
 import org.scalatest.{Matchers, WordSpec}
 
 import clients.firebase.{FirebaseClient, FirebaseUser}
-import db.models.{Inquest, UpdateInquest}
+import db.models.Inquest
 import db.spec.InquestRepository
 import db.spec.InquestRepository.InquestNotFound
-import service.models.ApiError
+import service.models.{ApiError, InquestUpdateRequest}
 
 import scala.concurrent.Future
 
@@ -23,8 +23,8 @@ class InquestRouterUpdateSpec extends WordSpec with Matchers with ScalatestRoute
 
   private val testInquestId = 1
   private val testInquest = Inquest(Some(1), "Queen vs CBC", "some inquest")
-  private val testUpdateInquest = UpdateInquest(Some("Queen vs CBC"), Some("some inquest"))
-  private val testUpdateInquestInvalidTitle = UpdateInquest(Some(""), Some("some inquest"))
+  private val testUpdateInquest = InquestUpdateRequest(Some("Queen vs CBC"), Some("some inquest"))
+  private val testUpdateInquestInvalidTitle = InquestUpdateRequest(Some(""), Some("some inquest"))
 
   private val testUser = FirebaseUser("uid")
   private val testToken = "token"
