@@ -40,7 +40,7 @@ class SlickInquestRepository(databaseConfig: DatabaseConfig[JdbcProfile])(implic
   }
 
   override def create(createInquest: InquestCreateRequest): Future[Inquest] = {
-    val inquest = createInquest.toInquest()
+    val inquest = createInquest.toInquest
     val q = (
       inquests returning inquests.map(_.id) into ((_, id) => inquest.copy(id = Some(id)))
     ) += inquest

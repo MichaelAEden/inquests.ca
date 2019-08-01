@@ -4,8 +4,7 @@ import db.models.Inquest
 
 case class InquestCreateRequest(title: String, description: String) {
 
-  // TODO
-  def toInquest(): Inquest =
+  def toInquest: Inquest =
     Inquest(None, title, description)
 
 }
