@@ -5,6 +5,7 @@ import slick.jdbc.JdbcProfile
 
 import db.models.Authority
 import db.slick.AuthorityTable
+import db.spec.AuthorityRepository.AuthorityNotFound
 import service.models.AuthorityCreateRequest
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -14,6 +15,7 @@ trait AuthorityRepository {
   def all(): Future[Seq[Authority]]
   def byId(id: Int): Future[Option[Authority]]
   def create(createAuthority: AuthorityCreateRequest): Future[Authority]
+  def delete(id: Int): Future[Unit]
 
 }
 
@@ -43,6 +45,15 @@ class SlickAuthorityRepository(databaseConfig: DatabaseConfig[JdbcProfile])(impl
       authorities returning authorities.map(_.id) into ((_, id) => authority.copy(id = Some(id)))
     ) += authority
     db.run(q)
+  }
+
+  // TODO: return deleted authority.
+  override def delete(id: Int): Future[Unit] = {
+    val q = authorities.filter(_.id === id).take(1)
+    db.run(q.delete).map { affectedRows =>
+      if (affectedRows == 0) throw AuthorityNotFound(id)
+      else ()
+    }
   }
 
 }

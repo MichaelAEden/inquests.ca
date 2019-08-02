@@ -1,9 +1,9 @@
 package service.router
 
 import akka.http.scaladsl.server.Route
-
 import clients.firebase.FirebaseClient
 import db.spec.AuthorityRepository
+import db.spec.AuthorityRepository.AuthorityNotFound
 import service.directives._
 import service.models._
 
@@ -31,6 +31,17 @@ class AuthorityRouter(authorityRepository: AuthorityRepository, fbClient: Fireba
                   complete(authority)
                 }
               }
+            }
+          }
+        }
+      } ~ path(IntNumber) { id: Int =>
+        delete {
+          authorizeAdmin("access to delete authority") apply { _ =>
+            handle(authorityRepository.delete(id)) {
+              case AuthorityNotFound(invalidId) => ApiError.authorityNotFound(invalidId)
+              case _ => ApiError.generic
+            } { _ =>
+              complete()
             }
           }
         }

@@ -9,6 +9,7 @@ import org.scalatest.{Matchers, WordSpec}
 import clients.firebase.{FirebaseClient, FirebaseUser}
 import db.models.Authority
 import db.spec.AuthorityRepository
+import db.spec.AuthorityRepository.AuthorityNotFound
 import service.models.{ApiError, AuthorityCreateRequest}
 
 import scala.concurrent.Future
@@ -175,6 +176,92 @@ class AuthorityRouterSpec extends WordSpec with Matchers with ScalatestRouteTest
 
     }
 
-  }
+    "provide DELETE /api/authorities/:id route" which {
+
+      "deletes an authority" in {
+        val mockAuthorityRepository = mock[AuthorityRepository]
+        val mockFirebaseClient = createMockFirebaseClient(testToken, Some(testUser), isAdmin = true)
+        val router = new AuthorityRouter(mockAuthorityRepository, mockFirebaseClient)
+
+        (mockAuthorityRepository.delete _)
+          .expects(1)
+          .returns(Future.successful(()))
+
+        (Delete(s"/api/authorities/1")
+          ~> addCredentials(testCredentials)
+          ~> router.sealedRoute
+          ~> check {
+          status shouldBe StatusCodes.OK
+        })
+      }
+
+      "returns not found if authority does not exist" in {
+        val mockAuthorityRepository = mock[AuthorityRepository]
+        val mockFirebaseClient = createMockFirebaseClient(testToken, Some(testUser), isAdmin = true)
+        val router = new AuthorityRouter(mockAuthorityRepository, mockFirebaseClient)
+
+        (mockAuthorityRepository.delete _)
+          .expects(1)
+          .returns(Future.failed(AuthorityNotFound(1)))
+
+        (Delete("/api/authorities/1")
+          ~> addCredentials(testCredentials)
+          ~> router.sealedRoute
+          ~> check {
+          val apiError = ApiError.authorityNotFound(1)
+          status shouldBe apiError.statusCode
+          val response = responseAs[String]
+          response shouldBe apiError.message
+        })
+      }
+
+      "handles repository failure" in {
+        val mockAuthorityRepository = mock[AuthorityRepository]
+        val mockFirebaseClient = createMockFirebaseClient(testToken, Some(testUser), isAdmin = true)
+        val router = new AuthorityRouter(mockAuthorityRepository, mockFirebaseClient)
+
+        (mockAuthorityRepository.delete _)
+          .expects(1)
+          .returns(Future.failed(new Exception("BOOM!")))
+
+        (Delete(s"/api/authorities/1")
+          ~> addCredentials(testCredentials)
+          ~> router.sealedRoute
+          ~> check {
+          status shouldBe ApiError.generic.statusCode
+          val response = responseAs[String]
+          response shouldBe ApiError.generic.message
+        })
+      }
+
+      "handles failure to authorize" in {
+        val mockAuthorityRepository = mock[AuthorityRepository]
+        val mockFirebaseClient = createMockFirebaseClient(testToken, Some(testUser), isAdmin = false)
+        val router = new AuthorityRouter(mockAuthorityRepository, mockFirebaseClient)
+
+        (Delete(s"/api/authorities/1")
+          ~> addCredentials(testCredentials)
+          ~> router.sealedRoute
+          ~> check {
+          status shouldBe StatusCodes.Forbidden
+        })
+      }
+
+      "handles failure to authenticate" in {
+        val mockAuthorityRepository = mock[AuthorityRepository]
+        val mockFirebaseClient = createMockFirebaseClient(testToken, maybeUser = None, isAdmin = false)
+        val router = new AuthorityRouter(mockAuthorityRepository, mockFirebaseClient)
+
+        (Delete(s"/api/authorities/1")
+          ~> addCredentials(testCredentials)
+          ~> router.sealedRoute
+          ~> check {
+          status shouldBe StatusCodes.Unauthorized
+        })
+      }
+
+    }
 
   }
+
+}
