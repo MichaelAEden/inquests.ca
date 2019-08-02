@@ -2,7 +2,7 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 
 import clients.firebase.FirebaseClient
-import db.spec.{Db, SlickInquestRepository}
+import db.spec.{Db, SlickAuthorityRepository}
 import service.router.AppRouter
 import service.Server
 import utils.Utils
@@ -23,7 +23,7 @@ object Main extends App with Utils {
 
   val firebaseClient: FirebaseClient = FirebaseClient(dispatcher)
   val databaseConfig = Db.getConfig
-  val repository = new SlickInquestRepository(databaseConfig)
+  val repository = new SlickAuthorityRepository(databaseConfig)
   val router = new AppRouter(repository, firebaseClient)
   val server = new Server(router, host, port)
 

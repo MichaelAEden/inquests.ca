@@ -10,10 +10,10 @@ object ApiError {
 
   val generic: ApiError = new ApiError(StatusCodes.InternalServerError, "Unknown error.")
 
-  def invalidInquestTitle(title: String): ApiError =
-    new ApiError(StatusCodes.BadRequest, s"Invalid inquest title: '$title'.")
+  def invalidAuthorityTitle(title: String): ApiError =
+    new ApiError(StatusCodes.BadRequest, s"Invalid authority title: '$title'.")
 
-  def inquestNotFound(id: Int): ApiError =
-    new ApiError(StatusCodes.NotFound, s"Inquest with id: '$id' not found.")
+  def authorityNotFound(id: Int): ApiError =
+    new ApiError(StatusCodes.NotFound, s"Authority with id: '$id' not found.")
 
 }
