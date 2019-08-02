@@ -34,23 +34,6 @@ class AuthorityRouter(authorityRepository: AuthorityRepository, fbClient: Fireba
             }
           }
         }
-      } ~ path(IntNumber) { id: Int =>
-        put {
-         authorizeAdmin("access to update authority") apply { _ =>
-           entity(as[AuthorityUpdateRequest]) { updateAuthority =>
-             validateWith(AuthorityUpdateRequestValidator)(updateAuthority) {
-               handle(authorityRepository.update(id, updateAuthority)) {
-                 case AuthorityRepository.AuthorityNotFound(_) =>
-                   ApiError.authorityNotFound(id)
-                 case _ =>
-                   ApiError.generic
-               } { authority =>
-                 complete(authority)
-               }
-             }
-           }
-         }
-       }
       }
     }
   }

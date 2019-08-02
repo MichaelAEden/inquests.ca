@@ -9,8 +9,7 @@ import org.scalatest.{Matchers, WordSpec}
 import clients.firebase.{FirebaseClient, FirebaseUser}
 import db.models.Authority
 import db.spec.AuthorityRepository
-import db.spec.AuthorityRepository.AuthorityNotFound
-import service.models.{ApiError, AuthorityCreateRequest, AuthorityUpdateRequest}
+import service.models.{ApiError, AuthorityCreateRequest}
 
 import scala.concurrent.Future
 
@@ -31,10 +30,6 @@ class AuthorityRouterSpec extends WordSpec with Matchers with ScalatestRouteTest
   private val testAuthorityCreateRequest = AuthorityCreateRequest("Mega Shark vs Crocasaurus", "some authority")
   private val testAuthorityCreateRequestInvalidTitle = testAuthorityCreateRequest.copy(title = "")
   private val testAuthorityCreateResponse = testAuthorityCreateRequest.toAuthority.copy(id = Some(1))
-
-  private val testUpdateAuthorityRequest = AuthorityUpdateRequest(Some("Queen vs CBC"), Some("some authority"))
-  private val testUpdateAuthorityRequestInvalidTitle = testUpdateAuthorityRequest.copy(title = Some(""))
-  private val testAuthorityUpdateResponse = Authority(Some(1), "Queen vs CBC", "some authority")
 
   private def createMockFirebaseClient(
     token: String,
@@ -171,114 +166,6 @@ class AuthorityRouterSpec extends WordSpec with Matchers with ScalatestRouteTest
         val router = new AuthorityRouter(mockAuthorityRepository, mockFirebaseClient)
 
         (Post("/api/authorities", testAuthorityCreateRequest)
-          ~> addCredentials(testCredentials)
-          ~> router.sealedRoute
-          ~> check {
-          status shouldBe StatusCodes.Unauthorized
-        })
-      }
-
-    }
-
-    "provide PUT /api/authorities route" which {
-
-      "updates an authority with valid data" in {
-        val mockAuthorityRepository = mock[AuthorityRepository]
-        val mockFirebaseClient = createMockFirebaseClient(testToken, Some(testUser), isAdmin = true)
-        val router = new AuthorityRouter(mockAuthorityRepository, mockFirebaseClient)
-
-        (mockAuthorityRepository.update _)
-          .expects(1, testUpdateAuthorityRequest)
-          .returns(Future.successful(testAuthorityUpdateResponse))
-
-        (Put(s"/api/authorities/1", testUpdateAuthorityRequest)
-          ~> addCredentials(testCredentials)
-          ~> router.sealedRoute
-          ~> check {
-          status shouldBe StatusCodes.OK
-          val response = responseAs[Authority]
-          response shouldBe testAuthorityUpdateResponse
-        })
-      }
-
-      "returns not found if authority does not exist" in {
-        val mockAuthorityRepository = mock[AuthorityRepository]
-        val mockFirebaseClient = createMockFirebaseClient(testToken, Some(testUser), isAdmin = true)
-        val router = new AuthorityRouter(mockAuthorityRepository, mockFirebaseClient)
-
-        (mockAuthorityRepository.update _)
-          .expects(1, testUpdateAuthorityRequest)
-          .returns(Future.failed(AuthorityNotFound(1)))
-
-        (Put("/api/authorities/1", testUpdateAuthorityRequest)
-          ~> addCredentials(testCredentials)
-          ~> router.sealedRoute
-          ~> check {
-          val apiError = ApiError.authorityNotFound(1)
-          status shouldBe apiError.statusCode
-          val response = responseAs[String]
-          response shouldBe apiError.message
-        })
-      }
-
-      "does not update an authority with invalid data" in {
-        val mockAuthorityRepository = mock[AuthorityRepository]
-        val mockFirebaseClient = createMockFirebaseClient(testToken, Some(testUser), isAdmin = true)
-        val router = new AuthorityRouter(mockAuthorityRepository, mockFirebaseClient)
-
-        (mockAuthorityRepository.update _)
-          .expects(*, *)
-          .never
-
-        (Put(s"/api/authorities/1", testUpdateAuthorityRequestInvalidTitle)
-          ~> addCredentials(testCredentials)
-          ~> router.sealedRoute
-          ~> check {
-          val apiError = ApiError.invalidAuthorityTitle(testUpdateAuthorityRequestInvalidTitle.title.get)
-          status shouldBe apiError.statusCode
-          val response = responseAs[String]
-          response shouldBe apiError.message
-        })
-      }
-
-      "handles repository failure" in {
-        val mockAuthorityRepository = mock[AuthorityRepository]
-        val mockFirebaseClient = createMockFirebaseClient(testToken, Some(testUser), isAdmin = true)
-        val router = new AuthorityRouter(mockAuthorityRepository, mockFirebaseClient)
-
-        (mockAuthorityRepository.update _)
-          .expects(1, testUpdateAuthorityRequest)
-          .returns(Future.failed(new Exception("BOOM!")))
-
-        (Put(s"/api/authorities/1", testUpdateAuthorityRequest)
-          ~> addCredentials(testCredentials)
-          ~> router.sealedRoute
-          ~> check {
-          status shouldBe ApiError.generic.statusCode
-          val response = responseAs[String]
-          response shouldBe ApiError.generic.message
-        })
-      }
-
-      "handles failure to authorize" in {
-        val mockAuthorityRepository = mock[AuthorityRepository]
-        val mockFirebaseClient = createMockFirebaseClient(testToken, Some(testUser), isAdmin = false)
-        val router = new AuthorityRouter(mockAuthorityRepository, mockFirebaseClient)
-
-        (Put(s"/api/authorities/1", testUpdateAuthorityRequest)
-          ~> addCredentials(testCredentials)
-          ~> router.sealedRoute
-          ~> check {
-          status shouldBe StatusCodes.Forbidden
-        })
-      }
-
-      "handles failure to authenticate" in {
-        val mockAuthorityRepository = mock[AuthorityRepository]
-        val mockFirebaseClient = createMockFirebaseClient(testToken, maybeUser = None, isAdmin = false)
-        val router = new AuthorityRouter(mockAuthorityRepository, mockFirebaseClient)
-
-        (Put(s"/api/authorities/1", testUpdateAuthorityRequest)
           ~> addCredentials(testCredentials)
           ~> router.sealedRoute
           ~> check {
