@@ -1,6 +1,3 @@
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
-
 import clients.firebase.FirebaseClient
 import db.spec.{Db, SlickInquestRepository}
 import service.router.AppRouter
@@ -11,8 +8,12 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.util.{Failure, Success}
 
+import akka.actor.ActorSystem
+import akka.stream.ActorMaterializer
+import com.typesafe.scalalogging.StrictLogging
+
 // TODO: use scalafmt.
-object Main extends App with Utils {
+object Main extends App with Utils with StrictLogging {
 
   val host = "0.0.0.0"
   val port = getEnvWithDefault("PORT", "9000").toInt
@@ -30,8 +31,8 @@ object Main extends App with Utils {
   val binding = server.bind()
 
   binding.onComplete {
-    case Success(_) => println("Success!")
-    case Failure(error) => println(s"Failed: ${error.getMessage}")
+    case Success(_) => logger.info("Successfully initialized server!")
+    case Failure(error) => logger.error(s"Failed to initialize server: ${error.getMessage}")
   }
 
   Await.result(binding, 10.seconds)
