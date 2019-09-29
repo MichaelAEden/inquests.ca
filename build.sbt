@@ -40,6 +40,7 @@ val akkaVersion = "2.5.22"
 val akkaHttpVersion = "10.1.8"
 val circeVersion = "0.10.0"
 val slickVersion = "3.3.1"
+val slf4jVersion = "1.7.28"
 
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
@@ -61,7 +62,11 @@ libraryDependencies ++= Seq(
   "com.typesafe.slick" %% "slick-hikaricp" % slickVersion,
   "mysql" % "mysql-connector-java" % "8.0.16",
   "com.h2database" % "h2" % "1.3.148",
-  "org.slf4j" % "slf4j-nop" % "1.6.4",
+
+  "org.slf4j" % "slf4j-api" % slf4jVersion,
+  "org.slf4j" % "slf4j-simple" % slf4jVersion,
+
+  "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
 
   "com.google.firebase" % "firebase-admin" % "6.8.1"
 )
